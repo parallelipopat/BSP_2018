@@ -1,0 +1,7 @@
+function [x_new, v_new] = velocity_verlet(x, v, h, m, force)
+    a = (1/m) * force;
+    x_new = x + h*v + 0.5*h*h*m*force;
+    v_new = v + 0.5*h*(1/m)*force;
+    force = update_forces(x_new);
+    v_new = v + 0.5*h*m*force;
+end
