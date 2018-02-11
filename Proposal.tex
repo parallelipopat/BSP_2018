@@ -1,0 +1,63 @@
+\documentclass[a4paper, 11pt]{article}
+	\usepackage{latexsym, amssymb, amsmath}
+	\usepackage{graphicx}
+	\usepackage{hyperref}
+	\pagestyle{plain}
+	\usepackage{lmodern}
+	\usepackage[T1]{fontenc}
+	\usepackage{textcomp}
+	\usepackage{gensymb}
+	\renewcommand{\vec}[1]{\mathbf{#1}}
+\begin{document}
+	\section{Idea}
+The idea of this project is to investigate the preservation of geometric properties of physical systems by numerical methods that are known to preserve the dynamic properties. We will focus mainly on the conservation of energy over time, as more and more computations are made. In some cases, the Hamiltonicity of the system will provide us with an easy way to check these results (whether a certain method preserves first integrals).
+
+	\section{Methods to be used}
+\begin{itemize}
+	\item Newmark-Beta methods: \newline
+These methods are mainly used in structural dynamics. They take the form:
+\begin{eqnarray}
+	\vec{v}_{i+1} & = & \vec{v}_{i} + h\left( \left[1-\gamma \right)\vec{a}_{i} + \gamma \vec{a}_{i+1}\right] \label{newmark_beta_v}\\
+	\vec{x}_{i+1} & = & \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\left[ \left(1-2\beta \right)\vec{a}_{i} + \beta \vec{a}_{i+1}\right] \label{newmark_beta_x}
+\end{eqnarray} where $\gamma \in \left[0, 1 \right]$ and $2\beta \in \left[0, 1 \right]$.
+
+As we will be considering conservative systems, we have that $ \vec{a}  = \frac{\vec{F}}{m} $. Furthermore, we have that $\vec{F}$ is function of $\vec{x}$, so Equation~\ref{newmark_beta_x} is implicit for $ \beta > 0 $ . This is causing me some trouble to code in Matlab, as I do not understand how implement the Newton-Raphson method with two variables $\left(\vec{x} ~\mbox{and}~ \vec{v}\right)$. Hence, as of now, I'd like to limit the scope of these methods to when $\beta = 0$. This is not a problem in Equation~\ref{newmark_beta_v} as once we get $\vec{x}_{i+1}$ from \ref{newmark_beta_x}, we can find $\vec{a}_{i+1}$. (Note: The Velocity Verlet \cite{Verlet1967} algorithm has $\beta = 0$ and $\gamma = \frac{1}{2} $.) 
+\end{itemize}
+
+	\section{Test Cases}
+\begin{itemize}
+	\item Pendulum
+$$
+\frac{d^2\theta}{dt^2} = \frac{g}{l}\sin(\theta)
+$$
+This example would just be to introduce the concepts, and to lay the foundation before going onto the molecular dynamics simulation. This would also be used to numerically derive the convergence order of each method.
+	\item Molecular dynamics
+This would be a simulation of 864 particles interacting under Lennard-Jones potential
+$$
+\vec{V}\left(\vec{r}\right) = 4\varepsilon \left[ \left( \frac{\sigma}{r}\right)^12 - \left( \frac{\sigma}{r}\right)^6 \right] \\
+$$
+We will be following Rahman's \cite{Rahman1964} criterion for the simulation, as they are better stated, for liquid argon at $130\degree $K  and $1.374 \mbox{g cm}^{-3}$.  This involves 864 particles of argon placed at arbitrary positions inside a cube of side $ L = 10.229\sigma$. Time step $h$ is defined to be $10^{-14}$ seconds. We will run the simulations with the different methods, plotting the change in the energy of the system as computed by the methods. Then, we will look at the data to see if a correlation exists between the value of $\gamma$ in \eqref{newmark_beta_v} and the energy of the system.
+\end{itemize}
+
+	\section{Ways to speed up the simulation}
+	After finding the optimum method from the analysis above, we will look at tricks that could speed up the simulation.
+\begin{itemize}
+	\item Use the incremental form of the optimum method (solving for $\delta \vec{x}_{i}$ instead of $\vec{x}_{i+1}$)
+	\item Use Newton's Third Law of Motion to reduce the number of computations by nearly half.
+	\item Pre-calculate a table of accelerations at for various values of $\vec{r}_{ij}$ so that we needn't perform a new calculation each time. This method can be fine tuned by creating a histogram of the frequencies of occurrence of $\vec{r}_{ij}$ to reduce the memory strain.
+	\item Consider Verlet's bookeeping method \cite{Verlet1967} - calculate the distances at each $n^{th}$ step, and use them for calculations for the next $n-1$ steps.
+	\item Define a cut-off distance after which we consider the Lennard-Jones potential to be zero.
+
+For the last two methods, we can even vary the parameters to see what brings the most optimum result.  
+\end{itemize}
+\begin{thebibliography}{10}
+	\bibitem{Verlet1967}
+		{\sc Loup Verlet}
+		{\it Computer "Experiments" on Classical Fluids}
+		Physical Review, Volume 159, Number 1, 1967.
+	\bibitem{Rahman1964}
+		{\sc A. Rahman}
+		{\it Correlations in the Motion of Atoms in Liquid Argon}
+		Physical Review, Volume 136, Number 2A, 1964.
+\end{thebibliography}
+\end{document}
