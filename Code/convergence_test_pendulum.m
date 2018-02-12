@@ -1,7 +1,7 @@
 clear all;
 
 % pendulum problem
-l = 5; g = 10; T = 5; m =1;
+l = 5; g = 10; T = 5;
 theta = 0;
 v_theta = 5;
 y0 = [theta; v_theta];
@@ -15,33 +15,25 @@ yref_final = yref(end,:).';
 
 % main loop
 N = 2.^(4:10); hsave = zeros(size(N));
-err = zeros(size(N)); err_EE = zeros(size(N));
+err = zeros(size(N));
+beta = 0.5;
 for ii = 1:length(N)
     h = T/N(ii); hsave(ii) = h;
-    x = theta; v = v_theta; ysol_EE = y0; 
+    x = theta; v = v_theta;
     
     for jj = 1:N(ii)
-        [x, v] = velocity_verlet(x, v, h, m, @update_forces);
-        ysol_EE = ysol_EE + h*f(ysol_EE);
-        %keyboard
+        [x, v] = newmark_beta(beta, x, v, h, @update_acceleration);
     end
     
     err(ii) = norm([x; v] - yref_final);
-    %keyboard
-    err_EE(ii) = norm(ysol_EE - yref_final);
 end
 
 figure;
-loglog(hsave, err_EE, '*-', 'linewidth', 2)
-hold on
 loglog(hsave, err, '*-', 'linewidth', 2)
-legend('EE', 'VV');
 fit = polyfit(log(hsave), log(err), 1);
-fit_EE = polyfit(log(hsave), log(err_EE), 1);
-fprintf('the convergence order of Velocity Verlet is %1.2f\n', fit(1));
-fprintf('the convergence order of Explicit Euler is %1.2f\n', fit_EE(1));
+fprintf('The convergence order of the Newmark-Beta method with beta: %f is %1.2f\n', beta, fit(1));
 
-function new_force = update_forces(x)
+function new_acceleration = update_acceleration(x)
     l = 5; g = 10;
-    new_force = -g*(1/l)*sin(x);
+    new_acceleration = -g*(1/l)*sin(x);
 end
