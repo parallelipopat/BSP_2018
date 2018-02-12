@@ -1,14 +1,21 @@
-\documentclass[a4paper, 11pt]{article}
+\documentclass[a4paper, 12pt]{article}
 	\usepackage{latexsym, amssymb, amsmath}
 	\usepackage{graphicx}
 	\usepackage{hyperref}
-	\pagestyle{plain}
 	\usepackage{lmodern}
 	\usepackage[T1]{fontenc}
 	\usepackage{textcomp}
 	\usepackage{gensymb}
+	\usepackage[margin=1in]{geometry}
 	\renewcommand{\vec}[1]{\mathbf{#1}}
+	\pagestyle{plain}
+
+\title{Proposal for BSP Project}
+\author{Utsav Popat}
+\date{February 11, 2018}
+
 \begin{document}
+	\maketitle
 	\section{Idea}
 The idea of this project is to investigate the preservation of geometric properties of physical systems by numerical methods that are known to preserve the dynamic properties. We will focus mainly on the conservation of energy over time, as more and more computations are made. In some cases, the Hamiltonicity of the system will provide us with an easy way to check these results (whether a certain method preserves first integrals).
 
@@ -28,7 +35,7 @@ As we will be considering conservative systems, we have that $ \vec{a}  = \frac{
 \begin{itemize}
 	\item Pendulum
 $$
-\frac{d^2\theta}{dt^2} = \frac{g}{l}\sin(\theta)
+\frac{d^2\theta}{dt^2} = -\frac{g}{l}\sin(\theta)
 $$
 This example would just be to introduce the concepts, and to lay the foundation before going onto the molecular dynamics simulation. This would also be used to numerically derive the convergence order of each method.
 	\item Molecular dynamics
