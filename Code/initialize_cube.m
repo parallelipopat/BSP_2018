@@ -1,24 +1,13 @@
-function coordinates = initialize_cube(num_mol, density)
-    coordinates = zeros(num_mol, 3);
-    num_side_molecules = ceil((num_mol)^(1/3));
-    length = (num_mol/density)^(1/3);
-    index = [0; 0; 0];
+function [coordinates, length_cube] = initialize_cube(num_particles, density)
+    %Rahman's parameters: 864, 1.374 g cm^-3
     
-    for mol = 1 : num_mol
-       coordinates(mol,:) = (index + [0.5; 0.5; 0.5])*(length/num_side_molecules);
-       
-       index(3) = index(3) + 1;
-       if (index(3) == num_side_molecules)
-           index(3) = 0;
-           index(2) = index(2) + 1;
-           if (index(2) == num_side_molecules)
-               index(2) = 0;
-               index(1) = index(1) + 1;
-           end
-       end 
-    end
+    mass_one_argon_atom = 39.95 * 1.6747 * (10^-24); % grams
+    sigma_argon = 3.4 * (10^-8); % cm
+    length_cube = ((num_particles * mass_one_argon_atom) / (density * sigma_argon^3))^(1/3); % in terms of sigma
     
-    figure;
+    seed = 7;
+    rng(seed);
+    
+    coordinates = length_cube.*rand(num_particles, 3);
     scatter3(coordinates(:, 1), coordinates(:, 2), coordinates(:, 3), 'filled');
-    view(-77,17);
 end

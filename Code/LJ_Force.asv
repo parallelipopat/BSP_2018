@@ -1,0 +1,15 @@
+function forces = LJ_Force(coordinates, length_cube)
+    forces = zeros(size(coordinates));
+    num_particles = size(coordinates, 1);
+    
+    for i = 1:num_particles-1
+        for j = i+1:num_particles
+            delta_r = coordinates(i,:) - coordinates(j,:);
+            inverse_delta_r = 1/norm(delta_r);
+            adjusted_delta_r = periodic_boundary_correction(delta_r, length_cube);
+            force_ij = delta_r.*[inverse_delta_r^8 * (inverse_delta_r^6 - 0.5)];
+            
+            f
+        end
+    end 
+end
