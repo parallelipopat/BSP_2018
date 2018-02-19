@@ -16,7 +16,7 @@ yref_final = yref(end,:).';
 % main loop
 N = 2.^(4:10); hsave = zeros(size(N));
 err = zeros(size(N));
-beta = 0.5;
+beta = 0;
 for ii = 1:length(N)
     h = T/N(ii); hsave(ii) = h;
     x = theta; v = v_theta;
@@ -30,7 +30,7 @@ end
 
 figure;
 loglog(hsave, err, '*-', 'linewidth', 2)
-fit = polyfit(log(hsave), log(err), 1);
+fit = polyfit(log(hsave(end-3:end)), log(err(end-3:end)), 1);
 fprintf('The convergence order of the Newmark-Beta method with beta: %f is %1.2f\n', beta, fit(1));
 
 function new_acceleration = update_acceleration(x)

@@ -1,7 +1,0 @@
-function vector = periodic_boundary_correction(vector, length_cube)
-    half_box_length = length_cube / 2;
-    
-    for dimension = 1:3
-        if vector(dim> 
-    end
-end
