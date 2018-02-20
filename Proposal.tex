@@ -24,8 +24,8 @@ The idea of this project is to investigate the preservation of geometric propert
 	\item Newmark-Beta methods: \newline
 These methods are mainly used in structural dynamics. They take the form:
 \begin{eqnarray}
-	\vec{v}_{i+1} & = & \vec{v}_{i} + h\left( \left[1-\gamma \right)\vec{a}_{i} + \gamma \vec{a}_{i+1}\right] \label{newmark_beta_v}\\
-	\vec{x}_{i+1} & = & \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\left[ \left(1-2\beta \right)\vec{a}_{i} + \beta \vec{a}_{i+1}\right] \label{newmark_beta_x}
+	\vec{v}_{i+1} & = & \vec{v}_{i} + h\left[\left(1-\gamma \right)\vec{a}_{i} + \gamma \vec{a}_{i+1}\right] \label{newmark_beta_v}\\
+	\vec{x}_{i+1} & = & \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\left[ \left(1-2\beta \right)\vec{a}_{i} + 2\beta \vec{a}_{i+1}\right] \label{newmark_beta_x}
 \end{eqnarray} where $\gamma \in \left[0, 1 \right]$ and $2\beta \in \left[0, 1 \right]$.
 
 As we will be considering conservative systems, we have that $ \vec{a}  = \frac{\vec{F}}{m} $. Furthermore, we have that $\vec{F}$ is function of $\vec{x}$, so Equation~\ref{newmark_beta_x} is implicit for $ \beta > 0 $ . This is causing me some trouble to code in Matlab, as I do not understand how implement the Newton-Raphson method with two variables $\left(\vec{x} ~\mbox{and}~ \vec{v}\right)$. Hence, as of now, I'd like to limit the scope of these methods to when $\beta = 0$. This is not a problem in Equation~\ref{newmark_beta_v} as once we get $\vec{x}_{i+1}$ from \ref{newmark_beta_x}, we can find $\vec{a}_{i+1}$. (Note: The Velocity Verlet \cite{Verlet1967} algorithm has $\beta = 0$ and $\gamma = \frac{1}{2} $.) 
@@ -41,7 +41,7 @@ This example would just be to introduce the concepts, and to lay the foundation 
 	\item Molecular dynamics
 This would be a simulation of 864 particles interacting under Lennard-Jones potential
 $$
-\vec{V}\left(\vec{r}\right) = 4\varepsilon \left[ \left( \frac{\sigma}{r}\right)^12 - \left( \frac{\sigma}{r}\right)^6 \right] \\
+\vec{V}\left(\vec{r}\right) = 4\varepsilon \left[ \left( \frac{\sigma}{r}\right)^{12} - \left( \frac{\sigma}{r}\right)^6 \right] \\
 $$
 We will be following Rahman's \cite{Rahman1964} criterion for the simulation, as they are better stated, for liquid argon at $130\degree $K  and $1.374 \mbox{g cm}^{-3}$.  This involves 864 particles of argon placed at arbitrary positions inside a cube of side $ L = 10.229\sigma$. Time step $h$ is defined to be $10^{-14}$ seconds. We will run the simulations with the different methods, plotting the change in the energy of the system as computed by the methods. Then, we will look at the data to see if a correlation exists between the value of $\gamma$ in \eqref{newmark_beta_v} and the energy of the system.
 \end{itemize}
