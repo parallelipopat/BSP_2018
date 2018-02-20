@@ -4,7 +4,7 @@ temperature = 94.4 / 119.5; % K
 density = 0.8071593965; 
 num_particles = 864;
 
-N = 100;
+N = 40;
 h = 0.032;
 
 [coordinates, length_cube] = initialize_cube(num_particles, density);
@@ -17,7 +17,7 @@ for ii = 1 : N
     a = dot(velocities, velocities, 2);
     b = 16 * sum(a) / num_particles;
     temp(ii) = b;
-    if (ii <= 50)
+    if (ii <= 5)
         velocities = (0.789958159 / b)^0.5 .* velocities;
     end
 end
@@ -25,5 +25,5 @@ plot(temp);
 
 function new_acceleration = update_acceleration(x)
     length_cube = 10.2294;
-    new_acceleration = LJ_Force(x, length_cube);
+    new_acceleration = (1/48)*LJ_Force(x, length_cube);
 end
