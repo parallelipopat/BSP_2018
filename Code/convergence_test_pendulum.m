@@ -16,14 +16,15 @@ yref_final = yref(end,:).';
 % main loop
 N = 2.^(4:10); hsave = zeros(size(N));
 err = zeros(size(N));
-beta = 0;
-gamma = 0;
+beta = 0.5;
+gamma = 0.5;
 for ii = 1:length(N)
     h = T/N(ii); hsave(ii) = h;
     x = theta; v = v_theta;
     
     for jj = 1:N(ii)
         [x, v] = newmark_beta(beta, gamma, x, v, h, @update_acceleration, @d_acceleration);
+        %[x, v] = newmark_beta_1d(beta, gamma, x, v, h, @update_acceleration, @d_acceleration);
     end
     
     err(ii) = norm([x; v] - yref_final);
