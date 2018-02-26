@@ -3,7 +3,7 @@ function [x_new, v_new] = newmark_beta_1d(beta, gamma, x_i, v_i, h, update_accel
     v_new = v_i + h*(1-gamma)*a_i; 
     
     f = @(z, v_i, a_i, h) v_i + 0.5*h*((1-2*beta)*a_i + 2*beta*update_acceleration(z));
-    Df = @(z, h) 0.5*beta*h*h*z;
+    Df = @(z, h) beta*h*h*z;
 
     F = @(x_j, x_i, h) x_j - x_i - h*f(x_j, v_i, a_i, h);
     DF = @(x_j, h) eye(size(x_j, 1)) - Df(d_acceleration(x_j), h);
