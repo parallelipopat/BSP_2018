@@ -26,7 +26,8 @@ for ii = 1 : N
     if (ii <= 2)
         velocities = (0.789958159 / b)^0.5 .* velocities;
     end
-    plot(0:ii-1, temp(1:ii), '-o');
+    ax1 = subplot(1,2,1);
+    plot(ax1, 0:ii-1, temp(1:ii), '-o');
     pause(0.05);
 end
 %plot(1:N,temp,'-o');

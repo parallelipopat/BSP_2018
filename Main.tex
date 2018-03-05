@@ -1,10 +1,31 @@
-\documentclass[a4paper, 11pt]{article}
-	\usepackage{latexsym, amssymb}
+\documentclass[a4paper, 12pt]{article}
+	\usepackage{latexsym, amssymb, amsmath}
 	\usepackage{graphicx}
+	\usepackage{epstopdf}
+	\usepackage{float}
 	\usepackage{hyperref}
-	\pagestyle{plain}
 	\usepackage{lmodern}
 	\usepackage[T1]{fontenc}
 	\usepackage{textcomp}
+	\usepackage{gensymb}
+	\usepackage{color}
+	\usepackage[margin=1in]{geometry}
+	\usepackage[ruled, vlined, algosection]{algorithm2e}
+	\newcommand{\mycommfont}[1]{\footnotesize \textcolor{blue}{#1}}
+	\SetCommentSty{mycommfont}
+
+	\renewcommand{\vec}[1]{\mathbf{#1}}
+	\pagestyle{plain}
+	\graphicspath{{Figures/}{../Figures/}}
+	\numberwithin{equation}{section}
+	\numberwithin{figure}{section}
+	\usepackage{subfiles}
 \begin{document}
+ 	\subfile{Introduction/Introduction.tex}
+	\newpage
+ 	\subfile{Newmark-Beta_Methods/Newmark-Beta_Methods.tex}
+
+	\newpage
+	\bibliography{BibTexRef}
+	\bibliographystyle{plain}
 \end{document}

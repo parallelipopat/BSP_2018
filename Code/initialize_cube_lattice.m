@@ -18,7 +18,7 @@ function coordinates = initialize_cube_lattice(num_mol, density)
        end 
     end
     
-    figure;
-    scatter3(coordinates(:, 1), coordinates(:, 2), coordinates(:, 3), 'filled');
-    view(-77,17);
+    %figure;
+    %scatter3(coordinates(:, 1), coordinates(:, 2), coordinates(:, 3), 'filled');
+    %view(-77,17);
 end
