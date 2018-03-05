@@ -8,18 +8,18 @@ Geometric Numerical Integration, when considered on the grand timeline of Mathem
 
 Consider, for example \cite{Hairer2006}, the following set of Lotka-Volterra prey-predator equations:
 \begin{align}
-	\frac{du}{dt} = u - uv, \qquad \frac{dv}{dt} = uv - 2v \label{lotka-volterra_example}
-\end{align} where $u(t)$ is the population of the prey over time, and $v(t)$ is that of the predator. Dividing the two equations in \ref{lotka-volterra_example}, we get that
+	\frac{du}{dt} = u - uv, \qquad \frac{dv}{dt} = uv - 2v \label{eqn:lotka-volterra_example}
+\end{align} where $u(t)$ is the population of the prey over time, and $v(t)$ is that of the predator. Dividing the two equations in \ref{eqn:lotka-volterra_example}, we get that
 \begin{align*}
 \left(1 -  \frac{2}{u}\right) du = \left(\frac{1}{v} - 1\right) dv
 \end{align*}
 Integrating the two sides of the equation, we get that
 \begin{align}
-I(u, v) = u - 2\ln{u} +  v - \ln{v} = const \label{lotka-volterra_solution}
+I(u, v) = u - 2\ln{u} +  v - \ln{v} = const \label{eqn:lotka-volterra_solution}
 \end{align}
-giving us that the solutions to \ref{lotka-volterra_example} lie on the level curves of \ref{lotka-volterra_solution}.
+giving us that the solutions to \ref{eqn:lotka-volterra_example} lie on the level curves of \ref{eqn:lotka-volterra_solution}.
 
-We solve the differential equation~\ref{lotka-volterra_example} with initial points $(u_0, v_0) = (2, 4)$ using three different numerical methods: Explicit Euler, Implicit Euler, and Symplectic Euler. The results can be found in Figure~\ref{fig:lotka-volterra_solutions}. 
+We solve the differential equation~\ref{eqn:lotka-volterra_example} with initial points $(u_0, v_0) = (2, 4)$ using three different numerical methods: Explicit Euler, Implicit Euler, and Symplectic Euler. The results can be found in Figure~\ref{fig:lotka-volterra_solutions}. 
 \begin{figure}[H]
 \includegraphics[scale=0.80]{lotka-volterra_method_comparison}
 \centering

@@ -18,7 +18,7 @@ N = 2.^(4:10); hsave = zeros(size(N));
 err = zeros(size(N));
 %beta = 0.5;
 figure_num = 0;
-beta = 1.00;
+beta = 0.5;
 %for gamma = 0:0.25:1
     %figure_num = 0;
     for gamma =0:0.25:1
@@ -37,18 +37,18 @@ beta = 1.00;
         %figure_num = figure_num + 1;
         %ax = subplot(1,5,figure_num);
         loglog(hsave, err, '*-', 'linewidth', 2)
-        ylim([10^-5 10^1]);
+        %ylim([10^-4 10^1]);
         xlabel('log(h)');
         ylabel('log(err)');
-        title('\beta = 1.00');
+        title('\beta = 0.00')
         hold on;
-        %fit = polyfit(log(hsave(end-3:end)), log(err(end-3:end)), 1);
-        %fprintf('The convergence order of the Newmark-Beta method with beta: %f and gamma: %f is %1.2f\n', beta, gamma, fit(1));
+        fit = polyfit(log(hsave(end-3:end)), log(err(end-3:end)), 1);
+        fprintf('The convergence order of the Newmark-Beta method with beta: %f and gamma: %f is %1.2f\n', beta, gamma, fit(1));
     end
     hold off;
     legend('0.00','0.25','0.50','0.75','1.00');
-    title(legend,'\gamma values');
-    legend('Location','northwest');
+    title(lgd,'\gamma values');
+    legen('Loc
 %end
 
 
