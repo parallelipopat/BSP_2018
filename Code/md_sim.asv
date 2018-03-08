@@ -1,14 +1,19 @@
 clear all; close all;
 
-[num_particles, epsilon, sigma, mass, density, kB, temperature, h] = initialise_params()
+temperature = 94.4 / 119.6; % 94.4K
+density = 0.8071593965; %1.374 g cm^-3
+mass = 48; % 39.95 * 1.6747 * 10^(-24) g
+num_particles = 500;
+kb = 1; % 1.38064852 * 10^(-23) J K^-1
 N = 20;
-
+h = 0.032; %10^(-15)s
 main_array = zeros(num_particles,3,N);
-length_cube = find_cube_length(num_particles, density);
-coordinates = initialize_cube(num_particles, length_cube);
-coordinates_array = zeros(num_particles, 3, N);
+[coordinates, length_cube] = initialize_cube(num_particles, density);
 velocities = initialize_velocities(num_particles, temperature);
-temp_array = zeros(N, 1);
+temp = zeros(N, 1);
+
+beta = 0;
+gamma = 0.5;
 
 figure
 hold on
@@ -16,22 +21,21 @@ for ii = 1 : N
     fprintf('%d\n', ii);
     %[coordinates, velocities] = newmark_beta(beta, gamma, coordinates, velocities, h, @update_acceleration, @d_acceleration);
     a = dot(velocities, velocities, 2);
-    b = mass * sum(a) / (3*num_particles*kB);
-    temp_array(ii) = b;
+    b = mass * sum(a) / (3*num_particles*kb);
+    temp(ii) = b;
     main_array(:,:,ii) = coordinates;
     [coordinates, velocities] = velocity_verlet(coordinates, velocities, h, @update_acceleration);
-    coordinates_array(:,:,ii) = coordinates;
     if (ii <= 5)
         velocities = (temperature / b)^0.5 .* velocities;
     end
-    plot(0:ii-1, temp_array(1:ii), '-o');
+    plot(0:ii-1, temp(1:ii), '-o');
     pause(0.05);
 end
 %plot(1:N,temp,'-o');
 
 function new_acceleration = update_acceleration(x)
-    [num_particles, epsilon, sigma, mass, density, kb, temperature, h] = initialise_params();
-    length_cube = find_cube_length(num_particles, density);
+    length_cube = 8.5245; % 0.0071 m
+    mass = 48; % 39.95*1.6747*10^(-24) g
     LJ_force_reply = (1/mass)*LJ_Force(x, length_cube);
     new_acceleration = LJ_force_reply(1);
 end

@@ -2,8 +2,9 @@ function [forces, d_forces] = LJ_Force(coordinates, length_cube)
     num_particles = size(coordinates, 1);
     dimension = size(coordinates, 2);
     forces = zeros(num_particles, dimension);
-    [num_particles, epsilon, sigma, mass, density, kB, temperature, h] = initialise_params();
-
+    [num_particles, epsilon, sigma, mass, density, kb, temperature, h] = initialise_params();
+    eps = 1.65 * 10^-21;
+    sigma = 3.4*10^-10;
     %d_forces = zeros(dimension, dimension, num_particles);
 
     for i = 1:num_particles-1
