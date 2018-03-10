@@ -1,6 +1,4 @@
-function velocities = initialize_velocities(num_particles, temperature)
-    [~, ~, ~, mass, ~, kB, ~, ~, ~] = initialise_params();
-    
+function velocities = initialize_velocities(num_particles, mass, kB, temperature)
     seed = 7;
     rng(seed);
     

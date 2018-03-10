@@ -1,12 +1,7 @@
-clear all; close all;
-[a, b] = initialize_cube(864,0.8071593965);
-forces = LJ_Force_vectorised(a,b);
-
-function forces = LJ_Force_vectorised(coordinates, length_cube)
-    forces = zeros(size(coordinates));
-    num_particles = size(coordinates, 1);
-    diff_sum = zeros(size(coordinates, 1));
-    force_ij = zeros(3, 1);
+function forces = LJ_Force_new(coordinates, length_cube)
+    [num_particles, epsilon, sigma, ~, ~, ~, ~, ~, ~] = initialise_params();
+    dimension = size(coordinates, 2);
+    forces = zeros(num_particles, dimension);
     
     dim = 1;
     dim_coord = coordinates(:,dim);
