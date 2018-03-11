@@ -10,15 +10,14 @@ function [forces, potential_energy] = find_forces(num_particles, epsilon, sigma,
                 diff_r = diff_r - length_cube*round(diff_r/length_cube);
                 dist_r_2 = sum(diff_r.^2);
                 dist_r_6 = dist_r_2^3; dist_r_8 = dist_r_6 * dist_r_2;
-                dist_r_12 = dist_r_6^2; dist_r_14 = dist_r_12 * dist_r_2;
                 
-                force_factor = (1/dist_r_14) - 0.5*(1/dist_r_8);
+                force_factor = (sigma_6/dist_r_8)*(sigma_6/dist_r_6 - 0.5);
                 forces(i,:) = forces(i,:) + force_factor*diff_r;
                 forces(j,:) = forces(j,:) - force_factor*diff_r;
-                potential_energy = potential_energy + (1/dist_r_6)*((1/dist_r_6) - 1);
+                potential_energy = potential_energy + (sigma_6/dist_r_6)*((sigma_6/dist_r_6) - 1);
             end
         end
     end
-    forces = forces*48*epsilon;
-    potential_energy = potential_energy*4*epsilon;
+    forces = 48*forces*epsilon;
+    potential_energy = 4*potential_energy*epsilon;
 end

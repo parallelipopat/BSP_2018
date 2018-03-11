@@ -1,33 +1,47 @@
+clear all; close all;
 tic;
 [num_particles, epsilon, sigma, r_cutoff, mass, density, kB, temperature, h, N_e, N_f, N_s, beta, gamma] = initialize_params();
 length_cube = find_cube_length(num_particles, density);
 diff = length_cube/((2*num_particles)^(1/3));
 coordinates = initialize_cube(num_particles, length_cube-diff);
 velocities = initialize_velocities(num_particles, mass, kB, temperature);
-[neighbours_list, num_neighbours_list] = find_neighbours(num_particles, coordinates, length_cube, r_cutoff);
 
-[forces, ~] = find_forces(num_particles, epsilon, sigma, coordinates, length_cube, neighbours_list, num_neighbours_list);
+[neighbours_list, num_neighbours_list] = find_neighbours(num_particles, coordinates, length_cube, r_cutoff);
+[forces, ~, jacobian_matrix] = find_forces(num_particles, epsilon, sigma, coordinates, length_cube, neighbours_list, num_neighbours_list);
+
 energy = zeros(N_f/N_s, 3);
+%coordinates_array = zeros(3*num_particles, 20);
+%velocities_array = zeros(3*num_particles, 20);
 
 for i = 1:(N_e+N_f)
-    if (mod(i, 25)==0)
+    if (mod(i, 1)==0)
         fprintf('%d\n', i);
     end
     
     acceleration = forces/mass;
-    coordinates = coordinates + h*velocities + 0.5*h^2*acceleration;
+    
+%    coordinates = coordinates + h*velocities + 0.5*h^2*acceleration;
+    
+    DF = eye(3*num_particles) - beta*h^2*jacobian_matrix;
+    F = -h*velocities -0.5*h^2*acceleration;
+    delta_coordinates = DF\(-F);
+    coordinates = coordinates + delta_coordinates;
+    
     velocities = velocities + h*(1-gamma)*acceleration;
-    [forces, potential_energy] = find_forces(num_particles, epsilon, sigma, coordinates, length_cube, neighbours_list, num_neighbours_list);
+    [forces, potential_energy, jacobian_matrix] = find_forces(num_particles, epsilon, sigma, coordinates, length_cube, neighbours_list, num_neighbours_list);
     acceleration = forces/mass;
     velocities = velocities + h*gamma*acceleration;
-    
+  
     if (i <= N_e)
        scaling_factor = (3*kB*num_particles*temperature)/(mass*sum(sum(velocities.^2,2)));
-       velocities = velocities * sqrt(scaling_factor) ; 
+       velocities = velocities * sqrt(scaling_factor);
     elseif (mod(i, N_s) == 0)
         energy_index = (i-N_e)/N_s;
         energy(energy_index, 1) = potential_energy/num_particles;
         energy(energy_index, 2) = 0.5*(mass*sum(sum(velocities.^2,2)))/num_particles;
+        %coordinates_array(:,energy_index) = coordinates;
+        %velocities_array(:,energy_index) = velocities;
+        %[neighbours_list, num_neighbours_list] = find_neighbours(num_particles, coordinates, length_cube, r_cutoff);
         %fprintf('%0.9f\n',energy(energy_index,1));
         %fprintf('%0.9f\n\n',energy(energy_index,2));
     end       

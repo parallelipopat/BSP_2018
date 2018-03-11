@@ -19,7 +19,7 @@ In this section, we will look at replicating the aforementioned simulation for a
 
 Before populating the argon atoms, we need to establish how the molecules will interact. We use the Lennard-Jones Potential to approximate the interaction with two atoms:
 \begin{align}
-	\vec{V}\left(\vec{r}_{ij}\right) = 4\varepsilon \left[ \left( \frac{\sigma}{r_{ij}}\right)^{12} - \left( \frac{\sigma}{r_{ij}}\right)^{6} \right] \label{eqn:lennard-jones_potential}
+	V\left(\vec{r}_{ij}\right) = 4\varepsilon \left[ \left( \frac{\sigma}{r_{ij}}\right)^{12} - \left( \frac{\sigma}{r_{ij}}\right)^{6} \right] \label{eqn:lennard-jones_potential}
 \end{align}
 where $\vec{r}_{ij}$ is the displacement between the $i^{th}$ and the $j^{th}$ atoms, $r_{ij} = \left\Vert\vec{r}_{ij}\right\Vert_{2}$, $\varepsilon$ is the potential well depth (a measure of strength of attraction of two atoms), and $\sigma$ is the distance at which the potential between two atoms is 0. The Lennard-Jones potential is a very simple model for the interactive forces between atoms; nevertheless it was found to suffice for modelling argon atoms in \cite{Rahman1964}. In fact, the simplicity of the Lennard-Jones potential contributes to speed of the simulation - given a system of $n$ atoms, the potential needs to be evaluated $\frac{n\left(n+1\right)}{2}$ times $\left(\mbox{as }r_{ij} = r_{ji}\right)$.
 
@@ -33,7 +33,7 @@ We have that force $\vec{f}$ along the vector $\vec{r}_{ij}$ is given by:
 \end{align*}
 Now,
 \begin{align*}
-\frac{dV}{dr_{ij}} = 4\varepsilon \left[ -12\left( \frac{\sigma}{r_{ij}}\right)^{13} + 6\left( \frac{\sigma}{r_{ij}}\right)^{7}\right]
+\frac{dV}{dr_{ij}} = 4\varepsilon \left[ -12\sigma^{12}\left( \frac{1}{r_{ij}}\right)^{13} + 6\sigma^{6}\left( \frac{1}{r_{ij}}\right)^{7}\right]
 \end{align*}
 and
 \begin{align*}
@@ -41,8 +41,8 @@ and
 \end{align*}
 Hence, by the chain rule, we get that
 \begin{align}
-\vec{f}\left(\vec{r}_{ij}\right) & = -4\varepsilon \left[ -12\left( \frac{\sigma}{r_{ij}}\right)^{13} + 6\left( \frac{\sigma}{r_{ij}}\right)^{8}\right] \times \frac{\vec{r}_{ij}}{r_{ij}} \nonumber \\
-& = 48\varepsilon \left( \frac{\sigma}{r_{ij}}\right)^{7} \left[ \left( \frac{\sigma}{r_{ij}}\right)^{6} - \frac{1}{2}\right] \times \frac{\vec{r}_{ij}}{r_{ij}} \label{eqn:lennard-jones_force_one_atom}
+\vec{f}\left(\vec{r}_{ij}\right) & = -4\varepsilon \left[ -12\sigma^{12}\left( \frac{1}{r_{ij}}\right)^{13} + 6\sigma^{6}\left( \frac{1}{r_{ij}}\right)^{7}\right] \times \frac{\vec{r}_{ij}}{r_{ij}} \nonumber \\
+& = 48\varepsilon \left[ \sigma^{12}\left( \frac{1}{r_{ij}}\right)^{14} - \frac{\sigma^{6}}{2}\left( \frac{1}{r_{ij}}\right)^{8}\right]\vec{r}_{ij} \label{eqn:lennard-jones_force_one_atom}
 \end{align}
 Hence, we get that the force exterted on particle $i$, $\vec{F}_{i}$ is given by:
 \begin{align*}
@@ -59,7 +59,7 @@ As explained earlier, limits on a computer's precision can introduce floating po
 where $\vec{r}_{ij}$ and $r_{ij}$ have the same meaning as before, but are expressed as a multiple of $\sigma$.
 Then, we can rewrite Equation~\ref{eqn:lennard-jones_force_one_atom} as:
 \begin{align}
-\vec{f}\left(\vec{r}_{ij}\right) = 48\left( \frac{1}{r_{ij}}\right)^{8} \left[ \left( \frac{1}{r_{ij}}\right)^{6} + \frac{1}{2}\left( \frac{1}{r_{ij}}\right)\right]\vec{r}_{ij} \label{eqn:lennard-jones_force_reduced_one_atom}
+\vec{f}\left(\vec{r}_{ij}\right) = 48\left( \frac{1}{r_{ij}}\right)^{8} \left[ \left( \frac{1}{r_{ij}}\right)^{6} - \frac{1}{2}\right]\vec{r}_{ij} \label{eqn:lennard-jones_force_reduced_one_atom}
 \end{align}
 As the SI unit for force is J$\cdot\mbox{m}^{-1}$, its reduced unit is $\varepsilon\cdot\sigma^{-1}$
 

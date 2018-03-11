@@ -27,8 +27,8 @@ beta = 1.00;
             x = theta; v = v_theta;
 
             for jj = 1:N(ii)
-                [x, v] = newmark_beta(beta, gamma, x, v, h, @update_acceleration, @d_acceleration);
-                %[x, v] = newmark_beta_1d(beta, gamma, x, v, h, @update_acceleration, @d_acceleration);
+                %[x, v] = newmark_beta(beta, gamma, x, v, h, @update_acceleration, @d_acceleration);
+                [x, v] = newmark_beta_1d(beta, gamma, x, v, h, @update_acceleration, @d_acceleration);
             end
 
             err(ii) = norm([x; v] - yref_final);
@@ -42,8 +42,8 @@ beta = 1.00;
         ylabel('log(err)');
         title('\beta = 1.00');
         hold on;
-        %fit = polyfit(log(hsave(end-3:end)), log(err(end-3:end)), 1);
-        %fprintf('The convergence order of the Newmark-Beta method with beta: %f and gamma: %f is %1.2f\n', beta, gamma, fit(1));
+        fit = polyfit(log(hsave(end-3:end)), log(err(end-3:end)), 1);
+        fprintf('The convergence order of the Newmark-Beta method with beta: %f and gamma: %f is %1.2f\n', beta, gamma, fit(1));
     end
     hold off;
     legend('0.00','0.25','0.50','0.75','1.00');
