@@ -10,8 +10,8 @@ velocities = initialize_velocities(num_particles, mass, kB, temperature);
 [forces, ~, jacobian_matrix] = find_forces(num_particles, epsilon, sigma, coordinates, length_cube, neighbours_list, num_neighbours_list);
 
 energy = zeros(N_f/N_s, 3);
-%coordinates_array = zeros(3*num_particles, 20);
-%velocities_array = zeros(3*num_particles, 20);
+coordinates_array = zeros(3*num_particles, N_f/N_s);
+velocities_array = zeros(3*num_particles, N_f/N_s);
 
 for i = 1:(N_e+N_f)
     if (mod(i, 1)==0)
@@ -39,11 +39,8 @@ for i = 1:(N_e+N_f)
         energy_index = (i-N_e)/N_s;
         energy(energy_index, 1) = potential_energy/num_particles;
         energy(energy_index, 2) = 0.5*(mass*sum(sum(velocities.^2,2)))/num_particles;
-        %coordinates_array(:,energy_index) = coordinates;
-        %velocities_array(:,energy_index) = velocities;
-        %[neighbours_list, num_neighbours_list] = find_neighbours(num_particles, coordinates, length_cube, r_cutoff);
-        %fprintf('%0.9f\n',energy(energy_index,1));
-        %fprintf('%0.9f\n\n',energy(energy_index,2));
+        coordinates_array(:,energy_index) = coordinates;
+        velocities_array(:,energy_index) = velocities;
     end       
 end
 energy(:,3) = energy(:,1) + energy(:,2);

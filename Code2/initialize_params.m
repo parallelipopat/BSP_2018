@@ -6,11 +6,11 @@ function [num_particles, epsilon, sigma, r_cutoff, mass, density, kB, temperatur
     mass = 48;
     density = 38.74457642;
     kB = 1;
-    temperature = 0.6694056515;
+    temperature = 1;
     h = 0.032;
     N_e = 10;
-    N_f = 1000;
+    N_f = 200;
     N_s = 10;
     beta = 0;
-    gamma = 0.2;
+    gamma = 0.5;
 end

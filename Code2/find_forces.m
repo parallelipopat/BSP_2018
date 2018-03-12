@@ -8,6 +8,7 @@ function [forces, potential_energy] = find_forces(num_particles, epsilon, sigma,
             if (j > i)
                 diff_r = coordinates(i,:) - coordinates(j,:);
                 diff_r = diff_r - length_cube*round(diff_r/length_cube);
+
                 dist_r_2 = sum(diff_r.^2);
                 dist_r_6 = dist_r_2^3; dist_r_8 = dist_r_6 * dist_r_2;
                 

@@ -18,4 +18,5 @@ function coordinates = initialize_cube(num_particles, length_cube) % FCC crystal
             end
         end
     end
+    %scatter3(coordinates(:,1),coordinates(:,2),coordinates(:,3),'filled')
 end

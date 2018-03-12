@@ -9,9 +9,11 @@
 	\usepackage{textcomp}
 	\usepackage{gensymb}
 	\usepackage{color}
+	\usepackage{listings}
 	\usepackage[margin=1in]{geometry}
 	\usepackage[ruled, vlined, algosection]{algorithm2e}
 	\usepackage{wrapfig}
+	\usepackage{mcode}
 	\newcommand{\mycommfont}[1]{\footnotesize \textcolor{blue}{#1}}
 	\SetCommentSty{mycommfont}
 
@@ -19,12 +21,15 @@
 	\pagestyle{plain}
 	\graphicspath{{Figures/}{../Figures/}}
 	\numberwithin{equation}{section}
+	\numberwithin{table}{section}
 	\numberwithin{figure}{section}
 	\usepackage{subfiles}
 \begin{document}
  	\subfile{Introduction/Introduction.tex}
 	\newpage
  	\subfile{Newmark-Beta_Methods/Newmark-Beta_Methods.tex}
+	\newpage
+	\subfile{Argon/Argon.tex}
 
 	\newpage
 	\bibliography{BibTexRef}

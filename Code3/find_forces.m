@@ -29,6 +29,7 @@ function [forces, potential_energy, jacobian_matrix] = find_forces(num_particles
             end
         end
     end
-    forces = 48*forces*epsilon;
-    potential_energy = 4*potential_energy*epsilon;
+    forces = 48*epsilon*forces;
+    jacobian_matrix = 48*epsilon*jacobian_matrix;
+    potential_energy = 4*epsilon*potential_energy;
 end
