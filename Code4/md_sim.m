@@ -7,7 +7,7 @@ coordinates = initialize_cube(num_particles, length_cube-diff);
 velocities = initialize_velocities(num_particles, mass, kB, temperature);
 
 [neighbours_list, num_neighbours_list] = find_neighbours(num_particles, coordinates, length_cube, r_cutoff);
-[forces, ~, jacobian_matrix] = find_forces(num_particles, epsilon, sigma, coordinates, length_cube, neighbours_list, num_neighbours_list);
+[forces, ~] = find_forces(num_particles, epsilon, sigma, coordinates, length_cube, neighbours_list, num_neighbours_list);
 
 energy = zeros(N_f/N_s, 3);
 coordinates_array = zeros(3*num_particles, N_f/N_s);
@@ -20,13 +20,10 @@ for i = 1:(N_e+N_f)
     
     acceleration = forces/mass;
     
-    DF = eye(3*num_particles) - beta*h^2*jacobian_matrix;
-    F = -h*velocities -0.5*h^2*acceleration;
-    delta_coordinates = DF\(-F);
-    coordinates = coordinates + delta_coordinates;
+    coordinates = coordinates + h*velocities + 0.5*h^2*acceleration;;
     
     velocities = velocities + h*(1-gamma)*acceleration;
-    [forces, potential_energy, jacobian_matrix] = find_forces(num_particles, epsilon, sigma, coordinates, length_cube, neighbours_list, num_neighbours_list);
+    [forces, potential_energy] = find_forces(num_particles, epsilon, sigma, coordinates, length_cube, neighbours_list, num_neighbours_list);
     acceleration = forces/mass;
     velocities = velocities + h*gamma*acceleration;
   
@@ -54,6 +51,6 @@ energy(:,3) = energy(:,1) + energy(:,2);
 steps = linspace(1,N_f/N_s,N_f/N_s);
 figure;
 plot(steps, energy(:,1), '-^', steps, energy(:,2), '-v', steps, energy(:,3), '-o');
-xlabel('Steps'); ylabel('Energy(\epsilon)');
+xlabel('Steps'); %ylabel('Energy(\varepsilon)');
 legend('Potential Energy', 'Kinetic Energy', 'Total Energy');
 toc;

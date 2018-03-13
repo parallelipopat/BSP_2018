@@ -1,3 +1,4 @@
+clear all; close all;
 tic;
 [num_particles, epsilon, sigma, r_cutoff, mass, density, kB, temperature, h, N_e, N_f, N_s, N_n, beta, gamma] = initialize_params();
 length_cube = find_cube_length(num_particles, density);
@@ -15,6 +16,7 @@ for i = 1:(N_e+N_f)
     end
     
     acceleration = forces/mass;
+    
     coordinates = coordinates + h*velocities + 0.5*h^2*acceleration;
 
     velocities = velocities + h*(1-gamma)*acceleration;
@@ -38,7 +40,7 @@ end
 r_cutoff_6 = r_cutoff^6;
 sigma_6 = sigma^6;
 shifting_potential_term = 4*(sigma_6/r_cutoff_6)*((sigma_6/r_cutoff_6) - 1);
-energy(:,2) = energy(:,2) - shifting_potential_term;
+energy(:,1) = energy(:,1) - shifting_potential_term;
 energy(:,3) = energy(:,1) + energy(:,2);
 
 steps = linspace(1,N_f/N_s,N_f/N_s);

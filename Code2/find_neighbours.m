@@ -20,5 +20,4 @@ function [neighbours_list,num_neighbours_list] = find_neighbours(num_particles, 
         num_neighbours_list(i) = num_neighbours_i;
     end
     neighbours_list = neighbours_list(:,1:max(num_neighbours_list));
-%    neighbours_list = sort(neighbours_list, 2);
 end
