@@ -19,7 +19,7 @@ I(u, v) = u - 2\ln{u} +  v - \ln{v} = const \label{eqn:lotka-volterra_solution}
 \end{align}
 giving us that the solutions to \ref{eqn:lotka-volterra_example} lie on the level curves of \ref{eqn:lotka-volterra_solution}.
 
-We solve the differential equation~\ref{eqn:lotka-volterra_example} with initial points $(u_0, v_0) = (2, 4)$ using three different numerical methods: Explicit Euler, Implicit Euler, and Symplectic Euler. The results can be found in Figure~\ref{fig:lotka-volterra_solutions}. 
+We solve the differential equation~\ref{eqn:lotka-volterra_example} with initial points $(u_0, v_0) = (2, 4)$ and $h = 0.02$ using three different numerical methods: Explicit Euler, Implicit Euler, and Symplectic Euler. The results can be found in Figure~\ref{fig:lotka-volterra_solutions}. 
 \begin{figure}[H]
 \includegraphics[scale=0.80]{lotka-volterra_method_comparison}
 \centering
@@ -27,10 +27,10 @@ We solve the differential equation~\ref{eqn:lotka-volterra_example} with initial
 \label{fig:lotka-volterra_solutions}
 \end{figure}
 
-The phase planes in Figure~\ref{fig:lotka-volterra_solutions} convey that the solutions must be a closed loops and periodic - but only the solution using the Symplectic Euler scheme satisifies this criterion. The other two methods qualitatively incorrectly - the solution either spirals inwards or outwards.
+The phase planes in Figure~\ref{fig:lotka-volterra_solutions} (denoted by the dotted lines) convey that the solutions must be a closed loops and periodic - but only the solution using the Symplectic Euler scheme satisifies this criterion. The other two methods are qualitatively incorrect - the solution either spirals inwards or outwards.
 
-Hence, it is important to study methods that preserve qualitative attributes of a system as weell. Since these attributes often occur in differential geometry (the study of differential equations in geometry), we call them geometric invariants - thus lending the name 'Geometric Numerical Integration' to their study.
+Hence, it is important to study methods that preserve qualitative attributes of a system as well. Since these attributes often occur in differential geometry (the study of differential equations in geometry), we call them geometric invariants - thus lending the name `Geometric Numerical Integration' to their study.
 
-In this paper, we will focus on a specific class of geometric invariants - non linear, highly oscillatory Hamiltonian problems. We will devote our attention to the problem of molecular dynamics - specifically a simulation of argon molecules as did by A. Rahman \cite{Rahman1964}, and L. Verlet \cite{Verlet1967}. We will first investigate the preservation of geometric invariants in the aforementioned system by the industry standard, Velocity Verlet algorithm, followed by an investigation using the Newmark-Beta family of numerical methods (of which the Velocity Verlet algorithm is a special case).We will conclude with a section on improving the speed of the molecular dynamics simulation, and the effects of improving speed on the action of the above methods.
+In this paper, we will focus on a specific class of geometric invariants - non linear, highly oscillatory Hamiltonian problems. We will devote our attention to the problem of molecular dynamics - specifically a simulation of argon molecules as did by A. Rahman \cite{Rahman1964}, and L. Verlet \cite{Verlet1967}. We will first investigate the preservation of geometric invariants in the aforementioned system by the industry standard, Velocity Verlet algorithm, followed by an investigation using the Newmark-Beta family of numerical methods (of which the Velocity Verlet algorithm is a special case). We will conclude with a section on improving the speed of the molecular dynamics simulation, and the effects of improving speed on the action of the above methods.
 
 \end{document}

@@ -172,6 +172,35 @@ A final consideration for our molecular dynamics simulation is the number of tim
 	V\left(\vec{r}_{ij}\right) = 4 \left[ \left(\left( \frac{1}{r_{ij}}\right)^{12} - \left( \frac{1}{r_{ij}}\right)^{6}\right) - \Bigg(\bigg( \frac{1}{r_{c}}\bigg)^{12} - \bigg( \frac{1}{r_{c}}\bigg)^{6}\Bigg) \right]   \label{eqn:lennard-jones_potential_reduced_shifted}
 \end{align}
 
-What is the optimal value for $r_{c}$? Periodic boundary conditions enforce that $r_{c} < \frac{L}{2}$ (as particles can only interact with particles in the same box). Generally, $r_{c} \leq \frac{L}{4}$\cite{FrenkelSmit2001}. In our simulations, we have $L = 10.229\sigma^{*}$; so, we define $r_{c} = 2.5\sigma^{*}$. We substitute this into Equation~\ref{eqn:lennard-jones_potential_reduced} and confirm that this is a good choice: $V(2.5) = -0.0163$, $V(2.6) = -0.0129$, and $V(3) = -0.005479$. The  loss in potential by setting $r_{c} = 2.5\sigma^{*}$ is minimal. The effect on computing time is phenomenal - only $6.3\%$ of all pairwise distances are smaller than $2.5\sigma^{*}$, thus eliminating $93.7\%$ of the computing power intensive force calculations. 
+What is the optimal value for $r_{c}$? Periodic boundary conditions enforce that $r_{c} < \frac{L}{2}$ (as particles can only interact with particles in the same box). Generally, $r_{c} \leq \frac{L}{4}$\cite{FrenkelSmit2001}. In our simulations, we have $L = 10.229\sigma^{*}$; so, we define $r_{c} = 2.5\sigma^{*}$. We substitute this into Equation~\ref{eqn:lennard-jones_potential_reduced} and confirm that this is a good choice: $V(2.5) = -0.0163$, $V(2.6) = -0.0129$, and $V(3) = -0.005479$. The  loss in potential by setting $r_{c} = 2.5\sigma^{*}$ is minimal. The effect on computing time is phenomenal - only $6.3\%$ of all pairwise distances are smaller than $2.5\sigma^{*}$, thus eliminating $93.7\%$ of the computing power intensive force calculations.
+
+As we saw earlier, repeated conditional checks are not very efficient, and consume a lot of time. This is especially expensive if each iteration of the simulation involved calculating the inter-particle distance and checking if that distance is lesser than $2.5 \sigma^{*}$ - around $400,000$ checks per iteration! Assuming that the positions of the particles do not vary much in each successive iteration, we can calculate a list of `neighbours' for each particle at the start of the simulation. However, it cannot be guaranteed that this list will be accurate for the entire run of the simulation. In fact, tests conducted with the Velocity Verlet algorithm show that this list is only $80\%$ accurate after 10 iterations, and $50\%$ accurate after 35 iterations. Clearly, we can't use the same list for the entire simulation.
+
+To find the optimal number of iterations after which the list of neighbours should be refreshed $\left(N_{n}\right)$, we run the simulation for 100 equilibration iterations $\left(N_{e}\right)$ followed by 600 iterations $\left(N_{f}\right)$, calculating the energy values every 10 iterations $\left(N_{s}\right)$ after equilibration. We compute the time taken for each run and the percentage error in the final energy values, using $N_{n} = 1$ as our reference (neighbours lists are updated on each iteration). The results summarised in Table~\ref{tbl:neighbour_lists} make the case for using the same list for over multiple iterations ($5\times$ improvement in speed), but updating them regularly enough to reduce the overall error. There's trade-off between speed and accuracy, and setting $N_{n} = 15$ seems to be a good compromise. 
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{ |c|c|c| }
+		\hline
+		$N_{n}$ & \% Error in Final Energy Value & Time taken (s) \\
+		\hline
+		1 & 0.00 &  945.86 \\ 
+		10 & 3.18 & 164.55 \\
+		15 & 4.43 & 146.90 \\
+		20 & 5.37 & 127.55 \\
+		35 & 7.67 & 99.58 \\
+		100 & 8.08 & 85.08 \\
+		No update & -1.21 & 62.18 \\
+		\hline
+	\end{tabular}
+	\caption{Results of tests to find optimal $N_{n}$}
+	\label{tbl:results_neighbour_lists}
+\end{table}
+
+
 \subsection{Experiment}
+
+
+
+
 \end{document}
