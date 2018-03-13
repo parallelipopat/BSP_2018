@@ -19,9 +19,13 @@ for i = 1:(N_e+N_f)
     end
     
     acceleration = forces/mass;
-    
+    seed_coordinates = coordinates+h;
+    F = seed_coordinates - coordinates - h*velocities - 0.5*h^2*((1-2*beta)*acceleration);
+    [forces, ~, jacobian_matrix] = find_forces(num_particles, epsilon, sigma, seed_coordinates, length_cube, neighbours_list, num_neighbours_list);
+    acceleration = forces/mass;
+    F = F - 0.5*h^2*(2*beta*acceleration);
     DF = eye(3*num_particles) - beta*h^2*jacobian_matrix;
-    F = -h*velocities -0.5*h^2*acceleration;
+
     delta_coordinates = DF\(-F);
     coordinates = coordinates + delta_coordinates;
     
