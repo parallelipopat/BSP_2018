@@ -1,5 +1,6 @@
 \documentclass[a4paper, 12pt]{article}
-	\usepackage{latexsym, amssymb, amsmath}
+	\usepackage{latexsym, amssymb, amsmath, amsthm}
+	\usepackage{mathtools}
 	\usepackage{graphicx}
 	\usepackage{epstopdf}
 	\usepackage{float}
@@ -15,6 +16,8 @@
 	\usepackage{wrapfig}
 	\usepackage{mcode}
 	\newcommand{\mycommfont}[1]{\footnotesize \textcolor{blue}{#1}}
+	\newtheorem{theorem}{Theorem}[section]
+	\newtheorem{claim}[theorem]{Claim}
 	\SetCommentSty{mycommfont}
 
 	\renewcommand{\vec}[1]{\mathbf{#1}}
@@ -30,6 +33,8 @@
  	\subfile{Newmark-Beta_Methods/Newmark-Beta_Methods.tex}
 	\newpage
 	\subfile{Argon/Argon.tex}
+	\newpage
+	\subfile{Experiment/Experiment.tex}
 
 	\newpage
 	\bibliography{BibTexRef}

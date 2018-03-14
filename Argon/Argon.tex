@@ -11,20 +11,20 @@ In this section, we will look at replicating the aforementioned simulation for a
 
 \subsection{Hamiltonian Equation}
 
-For a system of molecules, we have to solve the Hamiltonian \cite{Harier2006}
+For a system of molecules, we have to solve the Hamiltonian \cite{HarierLubichWanner2003}
 \begin{align}
-H(p, q) = \frac{1}{2}\sum_{i = 1}^{N} m_{i}^{-1}p_{i}^{T}p_{i} + \sum_{i=1}^{N-1} \sum_{j=i+1}^{N} V_{ij}\left(\left\Vert q_{i} - q_{j} \right\Vert\right), \label{eqn:mol_hamiltonian}
+	H(p, q) = \frac{1}{2}\sum_{i = 1}^{N} m_{i}^{-1}p_{i}^{T}p_{i} + \sum_{i=1}^{N-1} \sum_{j=i+1}^{N} V_{ij}\left(\left\Vert q_{i} - q_{j} \right\Vert\right), \label{eqn:mol_hamiltonian}
 \end{align} where $V_{ij}$ is a potential function, and $q_{i}$, $p_{i}$ and $m_{i}$ represent the position, momentum and mass of molecule $i$ respectively.
 The first term of the equation can be seen as the kinetic energy of the system, while the second term is the potential energy. We re-write Equation~\ref{eqn:mol_hamiltonian} as
-\begin{align*}
-\dot{q} = M^{-1}p, \quad \quad \dot{p} = -V'\left(q\right),
-\end{align*} where $M = \mbox{diag}\left(m_{1}\textbf{I}, \ldots, m_{N}\textbf{I}\right)$, and \textbf{I} is the $3\times3$ identity matrix. This is equivalent to the typical second order differential equation of motion $\ddot{q} = f\left(q\right)$, with $f\left(q\right) = M^{-1}V'\left(q\right)$.
+\begin{align}
+	\dot{q_{i}} = \frac{1}{m_{i}}p_{i}, \quad \quad \dot{p_{i}} = \sum_{j=1}^{N}\nu_{ij}\left(q_{i} - q_{j}\right), \label{eqn:mol_hamiltonian_separate}
+\end{align}where for $ i< j$, $ \nu_{ij} = \nu_{ji} = -\frac{V'_{ij}\left(r_{ij}\right)}{r_{ij}}$ and $\nu_{ii} = 0$, with $r_{ij} = \left\Vert q_{i} - q_{j} \right\Vert_{2}$.
 
 \subsection{Lennard-Jones Potential}
 
-\begin{wrapfigure}{r}{0.4\textwidth}
+\begin{wrapfigure}[16]{r}{0.5\textwidth}
 \centering
-\includegraphics[scale=0.4]{lennard-jones_potential_graph}
+\includegraphics[scale=0.5]{lennard-jones_potential_graph}
 \caption{Lennard-Jones Potential}
 \label{fig:lennard-jones_potential}
 \end{wrapfigure}

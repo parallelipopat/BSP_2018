@@ -1,0 +1,139 @@
+\documentclass[../Main.tex]{subfiles}
+
+\begin{document}
+
+\section{Experiment}
+We now look at running the simulation, and analyzing the results. First, we concentrate on the case $\beta = 0$ and investigate the behaviour of the solution under explicit methods. Then, we look at constructing the Jacobian for the implicit case $\left(\beta\neq 0\right)$, followed by analysing the solutions obtained for different values of $\beta$ and $\gamma$. For both cases, we will look at conservation of reversibility, energy, and momentum.
+We will assume that the simulations have the following initial configuration (unless stated otherwise):
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ |l|r| }
+		\hline
+		Parameter & Initial Value \\
+		\hline
+		No. of particles & 864 \\
+		Temperature & 1 K\textsuperscript{*} \\
+		Density & $38.744 \mbox{ m}^{*}\sigma^{*^{-3}}$ \\
+		h & 0.032 \\
+		$N_{e}$ & 100 \\
+		$N_{f}$ & 500 \\
+		$N_{s}$ & 10 \\
+		$N_{n}$ & 15 \\
+		\hline
+	\end{tabular}
+	\caption{Initial Configuration for molecular simulations}
+	\label{tbl:initial_configuration_simulation}
+\end{table}
+
+The last four elements in the table indicate that the simulation will initially be equilibrated for 100 iterations, and then run for 500 iterations where samples will be collected every 10 iterations (giving a total of 50 samples). The list of neighbours will be updated every 10 iterations in both the equilibration and final stages.
+
+\subsection{Geometric Invariants}
+
+We first expand on the geometric invariants of the molecular dynamics system. \\\
+The system is time reversible - if we go from state $s_{1}$ to state $s_{2}$ in time $\delta t$, then we return to state $s_{1}$ from state $s_{2}$ in time $\delta t$ by reversing the signs on the velocities. This can be seen by applying the transformation $t \mapsto -t$ to Equation~\ref{eqn:mol_hamiltonian_separate} - the position $q$ does not change, but the sign on momentum $p$ gets reversed.
+\begin{align*}
+q \mapsto q = \tilde{q},  \quad \quad p \mapsto -p = \tilde{p}.
+\end{align*}
+Then
+\begin{alignat*}{4}
+	\dot{\tilde{q}} &= \frac{d\tilde{q}}{d\left(-t\right)} \quad &&= -\nabla_{\tilde{p}}H \quad &&= \nabla_{p}H \quad &&= \dot{q},\\
+	\dot{\tilde{p}} &= \frac{d\tilde{p}}{d\left(-t\right)} \quad &&= -\nabla_{\tilde{q}}H \quad && =-\nabla_{q}H \quad &&= \dot{p}.
+\end{alignat*}
+Thus, the Hamiltonian system is time reversible.
+
+Conservation of total energy, linear momentum and angular momentum follow readily from Newton's Laws of Motion, as there is no external force on the system. We introduce the concept of first integrals that will make it simpler to check which methods conserve energy and momentum. \\
+A non-constant function $I(y)$ is a \textit{first integral} (or invariant) of the  differential equation $\dot{y} = F(y)$ if $I(y(t))$ is constant along every solution, or equivalently, if
+\begin{align}
+\nabla I(y)F(y) = 0    \quad \quad \quad  \forall y. \quad \cite{HarierLubichWanner2003}
+\end{align}
+We now give proofs that the total energy, total linear momentum, and total angular momentum are first integrals \cite{HarierLubichWanner2003}.
+\begin{theorem} The total energy, or the Hamiltonian (Equation~\ref{eqn:mol_hamiltonian}) is a first integral. \end{theorem}
+\begin{proof}
+$$
+H(p, q) = \frac{1}{2}\sum_{i = 1}^{N} m_{i}^{-1}p_{i}^{T}p_{i} + \sum_{i=1}^{N-1} \sum_{j=i+1}^{N} V_{ij}\left(\left\Vert q_{i} - q_{j} \right\Vert\right)
+$$
+So,
+$$
+	H' = \left(\nabla_{p}H^{T}, \nabla_{q}H^{T}\right)
+$$
+and
+$$
+	\frac{dH}{dt} =
+		\begin{pmatrix*}[r]
+			-\nabla_{q}H \\
+			\nabla_{p}H
+		\end{pmatrix*}
+$$
+Then, 
+$$
+H'(p, q) \cdot \frac{dH}{dt} = \nabla_{p}H^{T}\cdot-\nabla_{q}H + \nabla_{q}H^{T}\cdot \nabla_{p}H = 0
+$$ 
+\end{proof} 
+
+\begin{theorem} Total linear momentum $P = \sum_{i=1}^{N} p_{i}$ is a first integral. \end{theorem}
+\begin{proof}
+\begin{align*}
+\nabla P & = \frac{dP}{dt} = \sum_{i=1}^{N} \frac{dp_{i}}{dt} \\
+&=\sum_{i=1}^{N}\sum_{j=1}^{N}\nu_{ij}\left(q_{i} - q_{j}\right) \\
+& = 0 \qquad \qquad \qquad \qquad \cdots \mbox{ as }\nu_{ij} = \nu_{ji}
+\end{align*}
+\end{proof} 
+
+\begin{theorem} Total angular momentum $L = \sum_{i=1}^{N} q_{i} \times p_{i}$ is a first integral. \end{theorem}
+\begin{proof}
+\begin{align*}
+\nabla L & = \sum_{i=1}^{N} \frac{d}{dt} \left(q_{i} \times p_{i}\right) \\
+& = \sum_{i=1}^{N} \left(\dot{q}_{i} \times p_{i} + {q}_{i} \times \dot{p}_{i}\right) \\  
+& = \sum_{i=1}^{N} \left( \frac{1}{m_{i}}p_{i} \times p_{i} + q_{i} \times \sum_{j=1}^{N}\nu_{ij}\left(q_{i} - q_{j}\right)\right) \\  
+& = \sum_{i=1}^{N} \left( \frac{1}{m_{i}}p_{i} \times p_{i}\right) +  \sum_{i=1}^{N}\sum_{j=1}^{N} \left(q_{i} \times \nu_{ij}\left(q_{i} - q_{j}\right)\right) \\
+& = 0  \qquad \qquad \qquad \qquad \cdots \mbox{ as }\nu_{ij} = \nu_{ji} \mbox{ and } p_{i} \times p_{i} = 0
+\end{align*}
+\end{proof}
+ We have that total energy and total angular momentum are quadratic first integrals, and total linear momentum - as the name suggests - is a linear first integral.
+
+\subsection{Explicit Newmark Beta schemes}
+
+Recall that a Newmark Beta method in Equation~\ref{eqn:newmark-beta} has the form
+\begin{align*}
+		\vec{v}_{i+1} & = \vec{v}_{i} + h\left[\left(1-\gamma\right)\vec{a}_{i} + \gamma\vec{a}_{i+1}\left(\vec{x}_{i+1}\right)\right], \\
+		\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\left[\left(1-2\beta \right)\vec{a}_{i} + 2\beta\vec{a}_{i+1}\left(\vec{x}_{i+1}\right)\right], 
+\end{align*}with $\beta \in \left[0,0.5\right]$ and $\gamma \in \left[0,1\right]$.
+Setting $\beta = 0$, we get
+\begin{align}
+	\begin{split}
+		\vec{v}_{i+1} & = \vec{v}_{i} + h\left[\left(1-\gamma\right)\vec{a}_{i} + \gamma\vec{a}_{i+1}\right], \\
+		\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\vec{a}_{i},
+	\end{split} \label{explicit_newmark-beta}  
+\end{align}
+which is explicit in both equations (and hence, known as the Explicit Newmark Beta form).
+
+\subsubsection{Preservation of Reversibility}
+It is pretty straightforward to find the values of $\gamma$ that preserve the reversibility to the system. From \cite{Paganini2017}, we have
+\begin{theorem}The maximal order of a reversible one-step method is always even. \label{thm:reversible_even_order} \end{theorem}
+ As Newmark-Beta methods have maximal order 2 only if $\gamma = \frac{1}{2}$, we get from the contrapositive of \ref{thm:reversible_even_order} that any explicit scheme with $\gamma \neq \frac{1}{2}$ is not reversible.
+\begin{claim} The Velocity Verlet algorithm is reversible. \end{claim}
+\begin{proof}
+The Velocity Verlet algorithm is
+\begin{align}
+		\vec{v}_{i+1} & = \vec{v}_{i} + h\left(\frac{1}{2}\vec{a}_{i} + \frac{1}{2}\vec{a}_{i+1}\right), \label{eqn:target_reversible_velocity_verlet_v}\\
+		\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\vec{a}_{i} \label{eqn:target_reversible_velocity_verlet_x} 
+\end{align}
+Swapping $i \leftrightarrow i+1$ and $h \leftrightarrow -h$
+\begin{align}
+		\vec{v}_{i} & = \vec{v}_{i+1} - h\left(\frac{1}{2}\vec{a}_{i+1} + \frac{1}{2}\vec{a}_{i}\right),  \label{eqn:current_reversible_velocity_verlet_v}\\
+		\vec{x}_{i} & = \vec{x}_{i+1} - h\vec{v}_{i+1} + \frac{h^2}{2}\vec{a}_{i+1} \label{eqn:current_reversible_velocity_verlet_x} 
+\end{align}
+It is straight-forward to see that Equation~\ref{eqn:current_reversible_velocity_verlet_v} is the same as Equation~\ref{eqn:target_reversible_velocity_verlet_v}.
+For Equation~\ref{eqn:current_reversible_velocity_verlet_x}, we see
+\begin{align*}
+	\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i+1} - \frac{h^2}{2}\vec{a}_{i+1} \\
+	& = \vec{x}_{i} + h\left(\vec{v}_{i} + \frac{h}{2}\vec{a}_{i} + \frac{h}{2}\vec{a}_{i+1}\right) - \frac{h^2}{2}\vec{a}_{i+1} \\
+	& = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\vec{a}_{i}
+\end{align*} 
+\end{proof} 
+
+
+\subsection{Implicit Newarm Beta schemes}
+
+\end{document}
