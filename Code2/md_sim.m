@@ -9,6 +9,8 @@ velocities = initialize_velocities(num_particles, mass, kB, temperature);
 
 [forces, ~] = find_forces(num_particles, epsilon, sigma, coordinates, length_cube, neighbours_list, num_neighbours_list);
 energy = zeros(N_f/N_s, 3);
+linear_momentum = zeros(N_f/N_s, 3);
+angular_momentum = zeros(N_f/N_s, 3);
 
 for i = 1:(N_e+N_f)
     if (mod(i, 25)==0)
@@ -31,6 +33,8 @@ for i = 1:(N_e+N_f)
         energy_index = (i-N_e)/N_s;
         energy(energy_index, 1) = potential_energy/num_particles;
         energy(energy_index, 2) = 0.5*(mass*sum(sum(velocities.^2,2)))/num_particles;
+        linear_momentum(energy_index,:) = 48*sum(velocities);
+        angular_momentum(energy_index,:) = 48*sum(cross(coordinates,velocities,2));
     end
     
     if (mod(i, N_n) == 0)

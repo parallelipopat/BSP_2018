@@ -3,7 +3,7 @@
 \begin{document}
 
 \section{Experiment}
-We now look at running the simulation, and analyzing the results. First, we concentrate on the case $\beta = 0$ and investigate the behaviour of the solution under explicit methods. Then, we look at constructing the Jacobian for the implicit case $\left(\beta\neq 0\right)$, followed by analysing the solutions obtained for different values of $\beta$ and $\gamma$. For both cases, we will look at conservation of reversibility, energy, and momentum.
+We now look at running the simulation, and analyzing the results. First, we look at some theoretical results pertaining to the four geometrical invariants under question - time reversibilty, total energy, total linear momentum, and total angular momentum. Then, we look at running the simulation for different values of the parameters $\beta$ and $\gamma$.
 We will assume that the simulations have the following initial configuration (unless stated otherwise):
 
 \begin{table}[H]
@@ -76,7 +76,7 @@ $$
 \begin{align*}
 \nabla P & = \frac{dP}{dt} = \sum_{i=1}^{N} \frac{dp_{i}}{dt} \\
 &=\sum_{i=1}^{N}\sum_{j=1}^{N}\nu_{ij}\left(q_{i} - q_{j}\right) \\
-& = 0 \qquad \qquad \qquad \qquad \cdots \mbox{ as }\nu_{ij} = \nu_{ji}
+& = 0 \qquad \qquad \qquad \qquad \cdots \mbox{ as }\nu_{ij} = \nu_{ji} \forall i, j
 \end{align*}
 \end{proof} 
 
@@ -87,14 +87,31 @@ $$
 & = \sum_{i=1}^{N} \left(\dot{q}_{i} \times p_{i} + {q}_{i} \times \dot{p}_{i}\right) \\  
 & = \sum_{i=1}^{N} \left( \frac{1}{m_{i}}p_{i} \times p_{i} + q_{i} \times \sum_{j=1}^{N}\nu_{ij}\left(q_{i} - q_{j}\right)\right) \\  
 & = \sum_{i=1}^{N} \left( \frac{1}{m_{i}}p_{i} \times p_{i}\right) +  \sum_{i=1}^{N}\sum_{j=1}^{N} \left(q_{i} \times \nu_{ij}\left(q_{i} - q_{j}\right)\right) \\
-& = 0  \qquad \qquad \qquad \qquad \cdots \mbox{ as }\nu_{ij} = \nu_{ji} \mbox{ and } p_{i} \times p_{i} = 0
+& = 0  \qquad \qquad \qquad \qquad \cdots \mbox{ as }\nu_{ij} = \nu_{ji} \mbox{ and } p_{i} \times p_{i} =  \forall i, j
 \end{align*}
 \end{proof}
  We have that total energy and total angular momentum are quadratic first integrals, and total linear momentum - as the name suggests - is a linear first integral.
 
+Most numerical methods preserve linear first integrals - in fact, it is a property shared by all Runge-Kutta methods. Indeed, this holds true for the entire family of Newmark Beta methods as well.
+
+\begin{claim} All Newmark Beta methods preserve linear first integrals \end{claim}
+\begin{proof}
+Let $I(\vec{x}, \vec{v}) = b^{T}\vec{x} + c^{T}\vec{v}$ be a linear first integral, where $b$ and $c$ are some constant vectors.
+By the defintion of first integrals, we want that $I'(\vec{x}, \vec{v})= 0$ for all $\vec{x}, \vec{v}$.
+But $I'(\vec{x}, \vec{v}) = b^{T}\vec{v} + c^{T}\vec{a(\vec{x})}\ = 0$, implying that $b^{T} = 0$ and $c^{T}\vec{a} = 0$ for all $\vec{x}$. So, $I(\vec{x}, \vec{v}) = I(\vec{v}) = c^{T}\vec{v}$ (This makes sense as a linear first integral, total linear momentum, depends only on the velocities of the particles, and not the positions).\\
+Now, we multiply $c^{T}$ to the velocity portion of the Newmark Beta method and get that
+\begin{align*}
+I\left(\vec{v}_{i+1}\right) &= c^{T}\vec{v}_{i+1} \\
+&= c^{T}\vec{v}_{i} + h\left[\left(1-\gamma\right)c^{T}\vec{a}(\vec{x}_{i}) + \gamma c^{T}\vec{a}(\vec{x}_{i+1})\right] \\
+&= c^{T}\vec{v}_{i} = I\left(\vec{v}_{i}\right)
+\end{align*} 
+\end{proof}
+
+We cannot make a similar claim regarding the preservation of quadratic first integrals, but we can certainly simplify our work. Noether's Theorem states for the Hamiltonian $H(p, q)$ of the form Equation~\ref{eqn:mol_hamiltonian}, all quad
+
 \subsection{Explicit Newmark Beta schemes}
 
-Recall that a Newmark Beta method in Equation~\ref{eqn:newmark-beta} has the form
+Recall from Equation~\ref{eqn:newmark-beta} that a Newmark Beta method has the form
 \begin{align*}
 		\vec{v}_{i+1} & = \vec{v}_{i} + h\left[\left(1-\gamma\right)\vec{a}_{i} + \gamma\vec{a}_{i+1}\left(\vec{x}_{i+1}\right)\right], \\
 		\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\left[\left(1-2\beta \right)\vec{a}_{i} + 2\beta\vec{a}_{i+1}\left(\vec{x}_{i+1}\right)\right], 
@@ -134,6 +151,6 @@ For Equation~\ref{eqn:current_reversible_velocity_verlet_x}, we see
 \end{proof} 
 
 
-\subsection{Implicit Newarm Beta schemes}
+\subsection{Implicit Newmark Beta schemes}
 
 \end{document}

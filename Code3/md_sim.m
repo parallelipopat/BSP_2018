@@ -12,6 +12,7 @@ velocities = initialize_velocities(num_particles, mass, kB, temperature);
 energy = zeros(N_f/N_s, 3);
 coordinates_array = zeros(3*num_particles, N_f/N_s);
 velocities_array = zeros(3*num_particles, N_f/N_s);
+linear_momentum = zeros(N_f/N_s, 3);
 
 for i = 1:(N_e+N_f)
     if (mod(i, 1)==0)
@@ -41,6 +42,9 @@ for i = 1:(N_e+N_f)
         energy_index = (i-N_e)/N_s;
         energy(energy_index, 1) = potential_energy/num_particles;
         energy(energy_index, 2) = 0.5*(mass*sum(sum(velocities.^2,2)))/num_particles;
+        linear_momentum(energy_index,1) = 48*sum(velocities(1:3:end));
+        linear_momentum(energy_index,2) = 48*sum(velocities(2:3:end));
+        linear_momentum(energy_index,3) = 48*sum(velocities(3:3:end));
         coordinates_array(:,energy_index) = coordinates;
         velocities_array(:,energy_index) = velocities;
     end

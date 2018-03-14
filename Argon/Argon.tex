@@ -214,4 +214,15 @@ To find the optimal number of iterations after which the list of neighbours shou
 	\label{tbl:results_neighbour_lists}
 \end{table}
 
+\subsection{Computing the Jacobian}
+
+Recall from Equation~\ref{eqn:newton-raphson_final_step} that we need to compute the Jacobian of $\vec{a}\left(\vec{x}_{i}\right)$. For this, we need to store the coordinates of the molecules in a column vector of size $3N$, where N is the number of molecules in the system - rather than a more intuitive $N \times 3$ matrix. We fix the order of coordinates as
+$$
+\begin{pmatrix}
+	x_{1} \\ y_{1} \\ z_{1} \\
+	\vdots \\
+	x_{3N} \\ y_{3N} \\ z_{3N}
+\end{pmatrix}  
+$$ where $x_{i}, y_{i}, z_{i}$ are the x-,y-, and z-coordinates of particle $i$ respectively.
+Before we can analye
 \end{document}
