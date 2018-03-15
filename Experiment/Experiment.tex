@@ -64,6 +64,10 @@ For Equation~\ref{eqn:current_reversible_newmark-beta_x}, we see
 	& = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\left[\left(1-2\beta\right)\vec{a}_{i} + 2\beta\vec{a}_{i+1}\right].
 \end{align*} 
 \end{proof} 
+ 
+While the schemes may be time reversible in theory, the rounding-off errors in practice mean that we may not get back the initial state of the system after reversing the velocities. We test this for different values of $\beta$ and $\gamma$ on a short-term, and medium-term scale, and on a long-term scale for the explicit Newmark Beta methods (due to much faster execution time). In these experiments, we do not differentiate between equilibration and final iterations, and reverse the sign on the velocities after half of the total number of iterations have been completed.
+
+
 
 \subsection*{Aside: First Integrals}
 The next three invariants - total energy, linear momentum, and angular momentum - follow readily from Newton's Laws of Motion as there is no external force on the system. In order to simplify checking which methods preserve these invariants the best, we introduce the concept of first integrals. \\
@@ -97,6 +101,8 @@ I\left(\vec{v}_{i+1}\right) &= c^{T}\vec{v}_{i+1} \\
 &= c^{T}\vec{v}_{i} = I\left(\vec{v}_{i}\right)
 \end{align*} 
 \end{proof}
+
+As we calibrated the system to have an initial total linear momentum of zero, the total linear momentum will be zero for all of the trials. As this holds true for all members of the Newmar Beta family, we do not present experimental results for this property, but rather state that in all trials, the total linear momentum was almost zero - it cannot be exactly zero due to inaccuracies introduced by floating-point arithmetic and rounding-off, but these errors were in the range of $10^-{10}$.
 
 \subsection{Total Angular Momentum}
 
@@ -149,19 +155,35 @@ I(\vec{x}_{i+1}, \vec{v}_{i+1}) &=\vec{v}_{i+1}^{T}(C\vec{x}_{i+1} + d) \\
 \end{align*}
 \end{proof}
 
-It is unclear whether any other Newmark Beta method preserves angular momentum. Firstly, no other Newmark Beta method can be expressed as the composition of two methods - so, we can't adapt the proof given above. Secondly, we need that $\vec{v}_{i+1}^{T}(C\vec{x}_{i+1} + d)=\vec{v}_{i}^{T}(C\vec{x}_{i} + d)$. In the implicit case, there is a term $h^{2}\beta\vec{a}(\vec{x}_{i+1})$ in the expansion of $\vec{x}_{i+1}$. As we can see in the proof above, terms of the form $\vec{a}(\vec{x})$ need to be transposed so that they can disappear. As a result, the term $h^{2}\beta\vec{a}(\vec{x}_{i+1})$ won't disappear, and will propagate through the equation.
+It is unclear whether any other Newmark Beta method preserves angular momentum. No other Newmark Beta method can be expressed as the composition of two methods - so, we can't adapt the proof given above. This leads to a lot of unwieldly algebra.
+We can test for parameters  numerically first, and then using the results to guide us towards the theoretical result. However, while running the simulation with the Velocity Verlet method, we get that the angular momentum is not preserved! Table~\ref{tbl:total_angular_momentum_50_iterations} shows the first five samples of total angular momentum taken during the simulation. 
+\begin{table}[h]
+	\centering
+	\begin{tabular}{ |r|r|r|r| }
+		\hline
+		Iteration & x-component & y-component & z-component\\
+		\hline
+		10 & 493.28 & -402.32 & 1407.30 \\
+		20 & -4.80 & -10.18 & 914.24 \\
+		30 & 320.20 & -147.35 & 980.93 \\
+		40 & 717.70 & -181.21 & 704.27 \\
+		50 & 594.66 & 152.47 & 507.19 \\
+		\hline
+	\end{tabular}
+	\caption{Total angular momentum of the system over the first 50 iterations}
+	\label{tbl:total_angular_momentum_50_iterations}
+\end{table}
 
-
+The reason behind this incoherent behaviour is the application of periodic boundary conditions. Angular momentum is defined relative to the origin as it is the cross product of position and momentum. When a particle moves out of the box, it reenters the box from the opposite face due to periodic boundary conditions - this creates a discontinuity in the position of the particle, and hence, a discontinuity in the the angular momentum of the particle. Note however, that the velocity of the particle does not change, and hence, linear momentum is preserved. We say that periodic boundary conditions preserve translational symmetry, but not rotational symmetry.
+As a result, we have that in the simulations, no method will preserve total angular momentum. However, this will not affect the simulation as no thermodynamic property depends upon the angular momenta of the particles.
+ 
 \subsection{Total Energy}
 
-\begin{theorem} The total energy, or the Hamiltonian (Equation~\ref{eqn:mol_hamiltonian}) is a first integral. \end{theorem}
+\begin{theorem} The total energy, or the Hamiltonian, is a first integral. \end{theorem}
 \begin{proof}
+From definitions,
 $$
-H(p, q) = \frac{1}{2}\sum_{i = 1}^{N} m_{i}^{-1}p_{i}^{T}p_{i} + \sum_{i=1}^{N-1} \sum_{j=i+1}^{N} V_{ij}\left(\left\Vert q_{i} - q_{j} \right\Vert\right)
-$$
-So,
-$$
-	H' = \left(\nabla_{p}H^{T}, \nabla_{q}H^{T}\right)
+	\nabla H = \left(\nabla_{p}H^{T}, \nabla_{q}H^{T}\right)
 $$
 and
 $$
@@ -173,9 +195,12 @@ $$
 $$
 Then, 
 $$
-H'(p, q) \cdot \frac{dH}{dt} = \nabla_{p}H^{T}\cdot-\nabla_{q}H + \nabla_{q}H^{T}\cdot \nabla_{p}H = 0
+\nabla H(p, q) \cdot \frac{dH}{dt} = \nabla_{p}H^{T}\cdot-\nabla_{q}H + \nabla_{q}H^{T}\cdot \nabla_{p}H = 0
 $$ 
 \end{proof} 
 
+The case of total energy is more complicated than those of the other geometric invariants. As we will see later, it is not the Hamiltonian is not preserved by some methods, but rather it is the `shadow' variant of the Hamiltonian.
 
+We start by quoting Simo, Tarnow, and Wong from \cite{SimoTarnowWong1992}:
+``\textit{What may seem surprising is that all of the implicit members of the Newmark family, perhaps the most widely used time-stepping algorithms in nonlinear structural dynamics, are not designed to conserve energy and also fail to conserve momentum. Among the explicit members, only the central difference method preserves momentum.}''
 \end{document}

@@ -10,9 +10,12 @@ velocities = initialize_velocities(num_particles, mass, kB, temperature);
 [forces, ~, jacobian_matrix] = find_forces(num_particles, epsilon, sigma, coordinates, length_cube, neighbours_list, num_neighbours_list);
 
 energy = zeros(N_f/N_s, 3);
-coordinates_array = zeros(3*num_particles, N_f/N_s);
-velocities_array = zeros(3*num_particles, N_f/N_s);
+coordinates_array = zeros(3*num_particles, N_f/N_s+1);
+velocities_array = zeros(3*num_particles, N_f/N_s+1);
 linear_momentum = zeros(N_f/N_s, 3);
+
+coordinates_array(:,1) = coordinates;
+velocities_array(:,1) = velocities;
 
 for i = 1:(N_e+N_f)
     if (mod(i, 1)==0)
@@ -45,12 +48,16 @@ for i = 1:(N_e+N_f)
         linear_momentum(energy_index,1) = 48*sum(velocities(1:3:end));
         linear_momentum(energy_index,2) = 48*sum(velocities(2:3:end));
         linear_momentum(energy_index,3) = 48*sum(velocities(3:3:end));
-        coordinates_array(:,energy_index) = coordinates;
-        velocities_array(:,energy_index) = velocities;
+        coordinates_array(:,energy_index+1) = coordinates;
+        velocities_array(:,energy_index+1) = velocities;
     end
     
     if (mod(i, N_n) == 0)
          [neighbours_list, num_neighbours_list] = find_neighbours(num_particles, coordinates, length_cube, r_cutoff);
+    end
+    
+    if (i == (N_f+N_e)/2)
+       velocities = -1*velocities; 
     end
 end
 r_cutoff_6 = r_cutoff^6;
@@ -58,6 +65,9 @@ sigma_6 = sigma^6;
 shifting_potential_term = 4*(sigma_6/r_cutoff_6)*((sigma_6/r_cutoff_6) - 1);
 energy(:,1) = energy(:,1) - shifting_potential_term;
 energy(:,3) = energy(:,1) + energy(:,2);
+
+diff_coordinates = coordinates_array(:,1) - coordinates_array(:,(N_f/N_s)+1);
+diff_velocities = velocities_array(:,1) - velocities_array(:,(N_f/N_s)+1);
 
 steps = linspace(1,N_f/N_s,N_f/N_s);
 figure;

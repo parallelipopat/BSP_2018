@@ -29,7 +29,7 @@ beta = 1.00;
             for jj = 1:N(ii)
                 %[x, v] = newmark_beta(beta, gamma, x, v, h, @update_acceleration, @d_acceleration);
                 [x, v] = newmark_beta_1d(beta, gamma, x, v, h, @update_acceleration, @d_acceleration);
-            end
+             end
 
             err(ii) = norm([x; v] - yref_final);
         end
