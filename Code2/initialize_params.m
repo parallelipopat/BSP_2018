@@ -9,9 +9,9 @@ function [num_particles, epsilon, sigma, r_cutoff, mass, density, kB, temperatur
     temperature = 1;
     h = 0.032;
     N_e = 0;
-    N_f = 50;
+    N_f = 1000;
     N_s = 5;
     N_n = 15;
     beta = 0;
-    gamma = 0.5;
+    gamma = 0.75;
 end

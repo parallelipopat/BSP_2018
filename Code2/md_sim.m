@@ -61,9 +61,17 @@ energy(:,3) = energy(:,1) + energy(:,2);
 diff_coordinates = coordinates_array(:,:,1) - coordinates_array(:,:,(N_f/N_s) + 1);
 diff_velocities = velocities_array(:,:,1) - velocities_array(:,:,(N_f/N_s) + 1);
 
-steps = linspace(1,N_f/N_s,N_f/N_s);
-figure;
-plot(steps, energy(:,1), '-^', steps, energy(:,2), '-v', steps, energy(:,3), '-o');
-xlabel('Iterations'); ylabel('Energy(\epsilon)');
-legend('Potential Energy', 'Kinetic Energy', 'Total Energy','Location','east');
+a = coordinates_array(:, :, (N_f/N_s)+1);
+b = coordinates_array(:, :, 1);
+scatter3(a(:,1), a(:,2), a(:,3), 'filled');
+hold on;
+scatter3(b(:,1), b(:,2),b(:,3), 'filled');
+legend('Final State','Initial State','Location','northeast');
+hold off;
+
+% steps = linspace(1,N_f/N_s,N_f/N_s);
+% figure;
+% plot(steps, energy(:,1), '-^', steps, energy(:,2), '-v', steps, energy(:,3), '-o');
+% xlabel('Iterations'); ylabel('Energy(\epsilon)');
+% legend('Potential Energy', 'Kinetic Energy', 'Total Energy','Location','east');
 toc;
