@@ -8,10 +8,10 @@ function [num_particles, epsilon, sigma, r_cutoff, mass, density, kB, temperatur
     kB = 1;
     temperature = 1;
     h = 0.032;
-    N_e = 50;
-    N_f = 200;
+    N_e = 0;
+    N_f = 500;
     N_s = 10;
     N_n = 15;
     beta = 0.40; %can't exceed 0.5
-    gamma = 0.25;
+    gamma = 0.50;
 end

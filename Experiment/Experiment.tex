@@ -255,4 +255,45 @@ The case of total energy is more complicated than those of the other geometric i
 We start by quoting Simo, Tarnow, and Wong from \cite{SimoTarnowWong1992}:
 ``\textit{What may seem surprising is that all of the implicit members of the Newmark family, perhaps the most widely used time-stepping algorithms in nonlinear structural dynamics, are not designed to conserve energy and also fail to conserve momentum. Among the explicit members, only the central difference method preserves momentum.}''	
 
+Here, the ``central difference method'' refers to the Velocity Verlet Scheme, i.e., $\beta = 0$ and $\gamma = \frac{1}{2}$. But what is so significant about $\gamma = \frac{1}{2}$ that it appears everywhere? The answer lies in the interpretation of $\gamma$ in the Newmark Beta equations: $\gamma$ controls the damping in system by a factor of $\gamma - \frac{1}{2}$. So, if $\gamma > \frac{1}{2}$, then the energy in the system is damped, and if $\gamma < \frac{1}{2}$, the energy in the system grows. We see this numerically in Figure~\ref{fig:energy_time_series_damping}. 
+\begin{figure}[H]
+\centering
+ 	\begin{tabular}{@{}cc@{}}
+		\includegraphics[width=0.5\textwidth]{energy_b0,00_g0,25.eps} &
+    		\includegraphics[width=0.5\textwidth]{energy_b0,00_g0,75.eps} \\
+	\end{tabular}
+  	\caption{Energy time series for two explicit Newmark Beta methods}
+	\label{fig:energy_time_series_damping}
+\end{figure}
+
+Thus, we will restrict our numerical investigation to the cases where $\gamma = \frac{1}{2}$ and $\beta \in \left[0, \frac{1}{2}\right]$.
+For the explicit case ($\beta = 0$), we will use the initial conditions as defined in Table~\ref{tbl:initial_configuration_simulation}. For the implicit cases, however, we set $N_{e} = 50$ and $N_{f} = 200$ ($N_{n}$ and $N_{s}$ remain unchanged). Understandably, this could hamper the simulation; however, an implicit Newmark Beta method takes an average of 1100 s to perform 250 overall iterations, as compared to an explicit Newmark Beta method that takes an average of 170 s to perform 600 iterations. This slow speed of execution makes it impossible to run longer simulations for different parameters multiple times.
+
+The results of the investigation are visible in Figures~\ref{fig:energy_time_series_velocity_verlet} and \ref{fig:energy_time_series_gamma_0,50_implicit_beta}. We can see that the Velocity Verlet algorithm - ever dependable, as always - shows minimal change in the energy of the system over 500 iterations. The reason for this behaviour is that the Velocity Verlet shows a property known a symplecticity. A discussion on what is symplecticity, and what does it entail is beyond the scope of this project. However, the keen reader is can find a detailed, yet approachable, discussion in \cite{Sanz-serna1992}. As the solutions of a Hamiltonian system are also symplectic, we have that the Velocity Verlet is performs well as a numerical approximation scheme due to its symplecticity. Nonetheless, we can see that the total energy is not constant throughout the run - it decreases from $-3.36\varepsilon$ and $-3.79\varepsilon$. This gives us that the Velocity Verlet algorithm does not preserve the energy of the system (energy is not constant throughout the simulation), but rather conserved. We quote \cite{Harier2006}
+\begin{theorem}
+For a Hamiltonian $H(p, q)$, the total energy of a numerical solution $\left(p_{n}, q_{n}\right)$ of the Velocity Verlet method satisfies 
+$\left|H\left(p_{n}, q_{n}\right) - H\left(p_{0}, q_{0}\right) \right| \leq Ch^{2}$, where $C$ is a constant independent of $h$.
+\end{theorem}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.70]{energy_b0,00_g0,50.eps}
+\caption{Energy time series for Velocity Verlet method}
+\label{fig:energy_time_series_velocity_verlet}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+ 	\begin{tabular}{@{}cc@{}}
+    		\includegraphics[width=0.5\textwidth]{energy_b0,10_g0,50.eps} &
+    		\includegraphics[width=0.5\textwidth]{energy_b0,25_g0,50.eps} \\
+    		\includegraphics[width=0.5\textwidth]{energy_b0,40_g0,50.eps} &
+    		\includegraphics[width=0.5\textwidth]{energy_b0,50_g0,50.eps} \\
+	\end{tabular}
+  	\caption{Energy time series for implicit Newmark Beta methods with $\gamma = 0.50$}
+	\label{fig:energy_time_series_gamma_0,50_implicit_beta}
+\end{figure} 
+
+Figure~\ref{fig:energy_time_series_gamma_0,50_implicit_beta}, however, brings bad news. We see that the graphs depict energy being conserved for every value of $\beta$ tested. This contradicts the quote above, which states that the implicit Newmark Beta methods are not designed to preserve energy. This highlights that the simplification in our initial configuration could have actually caused problems such that the system may not have been properly equilibrated before it was sampled. It is untenable to run simulations with the initial configurations defined in Table~\ref{tbl:initial_configuration_simulation} for all permissible values of $\beta$.
+Thus, we need to consider a way to reduce the possible candidates that we review. Looking at literature, the trapezoidal rule $\left(\beta = 0, \gamma = \frac{1}{2}\right)$ is mentioned quite often - \cite{DoyenErnPiperno2011}, \cite{SimoTarnowWong1992}. Figure~\ref{} shows the results of running the simulation with unmodified initial configurations with the Trapezoidal Rule. This took almost 2200 seconds to compute, and hence, cannot be used for other values. Instead, we can use the result discovered ahead that Velocity Verlet conserves energy in order to supply an already equilibrated system.
 \end{document}

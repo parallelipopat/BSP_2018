@@ -10,12 +10,12 @@ velocities = initialize_velocities(num_particles, mass, kB, temperature);
 [forces, ~] = find_forces(num_particles, epsilon, sigma, coordinates, length_cube, neighbours_list, num_neighbours_list);
 
 energy = zeros(N_f/N_s, 3);
-linear_momentum = zeros(N_f/N_s, 3);
-angular_momentum = zeros(N_f/N_s, 3);
-coordinates_array = zeros(num_particles, 3, (N_f+N_e)/N_s);
-velocities_array = zeros(num_particles, 3, (N_f+N_e)/N_s);
-coordinates_array(:,:,1) = coordinates;
-velocities_array(:,:,1) = velocities;
+% linear_momentum = zeros(N_f/N_s, 3);
+% angular_momentum = zeros(N_f/N_s, 3);
+% coordinates_array = zeros(num_particles, 3, (N_f+N_e)/N_s);
+% velocities_array = zeros(num_particles, 3, (N_f+N_e)/N_s);
+% coordinates_array(:,:,1) = coordinates;
+% velocities_array(:,:,1) = velocities;
 
 for i = 1:(N_e+N_f)
     if (mod(i, 25)==0)
@@ -38,19 +38,19 @@ for i = 1:(N_e+N_f)
         energy_index = (i-N_e)/N_s;
         energy(energy_index, 1) = potential_energy/num_particles;
         energy(energy_index, 2) = 0.5*(mass*sum(sum(velocities.^2,2)))/num_particles;
-        linear_momentum(energy_index,:) = 48*sum(velocities);
-        angular_momentum(energy_index,:) = 48*sum(cross(coordinates,velocities,2));
-        coordinates_array(:,:,energy_index+1) = coordinates;
-        velocities_array(:,:,energy_index+1) = velocities;
+%         linear_momentum(energy_index,:) = 48*sum(velocities);
+%         angular_momentum(energy_index,:) = 48*sum(cross(coordinates,velocities,2));
+%         coordinates_array(:,:,energy_index+1) = coordinates;
+%         velocities_array(:,:,energy_index+1) = velocities;
     end
     
     if (mod(i, N_n) == 0)
          [neighbours_list, num_neighbours_list] = find_neighbours(num_particles, coordinates, length_cube, r_cutoff);
     end
     
-    if (i == (N_f+N_e)/2)
-       velocities = -1*velocities;
-    end
+%     if (i == (N_f+N_e)/2)
+%        velocities = -1*velocities;
+%     end
 end
 r_cutoff_6 = r_cutoff^6;
 sigma_6 = sigma^6;
@@ -58,20 +58,20 @@ shifting_potential_term = 4*(sigma_6/r_cutoff_6)*((sigma_6/r_cutoff_6) - 1);
 energy(:,1) = energy(:,1) - shifting_potential_term;
 energy(:,3) = energy(:,1) + energy(:,2);
 
-diff_coordinates = coordinates_array(:,:,1) - coordinates_array(:,:,(N_f/N_s) + 1);
-diff_velocities = velocities_array(:,:,1) - velocities_array(:,:,(N_f/N_s) + 1);
+% diff_coordinates = coordinates_array(:,:,1) - coordinates_array(:,:,(N_f/N_s) + 1);
+% diff_velocities = velocities_array(:,:,1) - velocities_array(:,:,(N_f/N_s) + 1);
+% 
+% a = coordinates_array(:, :, (N_f/N_s)+1);
+% b = coordinates_array(:, :, 1);
+% scatter3(a(:,1), a(:,2), a(:,3), 'filled');
+% hold on;
+% scatter3(b(:,1), b(:,2),b(:,3), 'filled');
+% legend('Final State','Initial State','Location','northeast');
+% hold off;
 
-a = coordinates_array(:, :, (N_f/N_s)+1);
-b = coordinates_array(:, :, 1);
-scatter3(a(:,1), a(:,2), a(:,3), 'filled');
-hold on;
-scatter3(b(:,1), b(:,2),b(:,3), 'filled');
-legend('Final State','Initial State','Location','northeast');
-hold off;
-
-% steps = linspace(1,N_f/N_s,N_f/N_s);
-% figure;
-% plot(steps, energy(:,1), '-^', steps, energy(:,2), '-v', steps, energy(:,3), '-o');
-% xlabel('Iterations'); ylabel('Energy(\epsilon)');
-% legend('Potential Energy', 'Kinetic Energy', 'Total Energy','Location','east');
+steps = linspace(1,N_f/N_s,N_f/N_s);
+figure;
+plot(steps, energy(:,1), '-^', steps, energy(:,2), '-v', steps, energy(:,3), '-o');
+xlabel('Iterations'); ylabel('Energy (\epsilon)');
+legend('Potential Energy', 'Kinetic Energy', 'Total Energy','Location','east');
 toc;
