@@ -223,6 +223,68 @@ $$
 	\vdots \\
 	x_{3N} \\ y_{3N} \\ z_{3N}
 \end{pmatrix}  
-$$ where $x_{i}, y_{i}, z_{i}$ are the x-,y-, and z-coordinates of particle $i$ respectively.
-Before we can analye
+$$ where $x_{i}, y_{i}, z_{i}$ are the x,y, and z coordinates of particle $i$ respectively (we will continue to use an $N \times 3$ matrix for the explicit Newmark Beta methods, as this orientation is proven to be faster during tests). The Jacobian is then by a $3N \times 3N$ matrix, which would be very expensive to compute for large $N$.
+$$
+\renewcommand\arraystretch{1.5}
+J = \begin{pmatrix}
+\frac{\partial \vec{f}_{1}}{\partial \vec{p}_{1}} & \frac{\partial \vec{f}_{1}}{\partial \vec{p}_{2}} & \cdots & \frac{\partial \vec{f}_{1}}{\partial \vec{p}_{n}} \\
+\frac{\partial \vec{f}_{2}}{\partial \vec{p}_{1}} & \frac{\partial \vec{f}_{2}}{\partial \vec{p}_{2}} & \cdots & \frac{\partial \vec{f}_{2}}{\partial \vec{p}_{n}} \\
+\vdots & \vdots & \ddots & \vdots \\
+\frac{\partial \vec{f}_{n}}{\partial \vec{p}_{1}} & \frac{\partial \vec{f}_{n}}{\partial \vec{p}_{2}} & \cdots & \frac{\partial \vec{f}_{n}}{\partial \vec{p}_{n}}
+\end{pmatrix},
+$$
+where $\vec{f}_{i} = \sum_{i=1}^{N} \vec{f}_{ij}$, $\vec{p}_{i} = \begin{psmallmatrix} x_{i} \\ y_{i} \\ z_{i} \end{psmallmatrix}$, and \\
+$$
+\renewcommand\arraystretch{1.5}
+\frac{\partial \vec{f}_{i}}{\partial \vec{p}_{j}} =
+	\begin{pmatrix}
+		\frac{\partial f_{i_{x}}}{\partial x_{j}}  & \frac{\partial f_{i_{x}}}{\partial y_{j}} & \frac{\partial f_{i_{x}}}{\partial z_{j}} \\
+		\frac{\partial f_{i_{y}}}{\partial x_{j}}  & \frac{\partial f_{i_{y}}}{\partial y_{j}} & \frac{\partial f_{i_{y}}}{\partial z_{j}} \\
+		\frac{\partial f_{i_{z}}}{\partial x_{j}}  & \frac{\partial f_{i_{z}}}{\partial y_{j}} & \frac{\partial f_{i_{z}}}{\partial z_{j}} 	
+	\end{pmatrix},
+$$
+where $f_{i_{x}}$ is the x-component of the force $\vec{f}_{i}$. \\
+Now, we have from Equation~\ref{eqn:lennard-jones_force_reduced_one_atom}
+\begin{align*}
+f_{i_{x}} &= \sum_{j=1}^{N} f_{ij_{x}} \\
+&= \sum_{j\in ngbrs(i)} 48\left[ \left( \frac{1}{r_{ij}}\right)^{14} - \frac{1}{2}\left( \frac{1}{r_{ij}}\right)^{8} \right]x_{ij},
+\end{align*} where $r_{ij} = \sqrt{x_{ij}^{2} + y_{ij}^{2} + z_{ij}^{2}}$, and $ngbrs(i)$ is the list of neighbors of particle $i$. \\
+Focusing on just $f_{ij_{x}}$ for some $i$ and $j$, we write $f_{ij_{x}} = 48s(r_{ij})x_{ij}$. We can see that
+\begin{align*}
+\frac{ds(r_{ij})}{dx_{i}} & = -14\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{10}, \\
+\frac{ds(r_{ij})}{dx_{j}} & = 14\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{16} - 4\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{10} \\
+& = - \frac{ds(r_{ij})}{dx_{i}}.
+\end{align*}
+Then,
+\begin{align}
+\frac{df_{ij_{x}}}{dx_{i}} &= 48\left(\frac{ds(r_{ij})}{dx_{i}}\cdot x_{ij} + s(r_{ij})\cdot \frac{dx_{ij}}{dx_{i}}\right) \nonumber \\
+&= 48\left(-14\left(x_{i} - x_{j}\right)^{2}\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(x_{i} - x_{j}\right)^{2}\left(\frac{1}{r_{ij}}\right)^{10} +  s(r_{ij})\right), \nonumber \\
+\frac{df_{ij_{x}}}{dx_{j}} &= 48\left(\frac{ds(r_{ij})}{dx_{j}}\cdot x_{ij} + s(r_{ij})\cdot \frac{dx_{ij}}{dx_{j}}\right) \nonumber \\
+&= 48\left(- \frac{ds(r_{ij})}{dx_{i}}\cdot x_{ij} - s(r_{ij})\right) \nonumber \\
+&= -\frac{df_{ij_{x}}}{dx_{i}}. \label{eqn:negative_j_point_derivative_x}
+\end{align}
+Furthermore,
+\begin{align}
+\frac{df_{ij_{x}}}{dy_{i}} &= 48\left(\frac{ds(r_{ij})}{dy_{i}}\cdot x_{ij} + s(r_{ij})\cdot \frac{dx_{ij}}{dy_{i}}\right) \nonumber \\
+&= 48\left(-14\left(x_{i} - x_{j}\right)\left(y_{i} - y_{j}\right)\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(x_{i} - x_{j}\right)\left(y_{i} - y_{j}\right)\left(\frac{1}{r_{ij}}\right)^{10}\right), \nonumber \\
+\frac{df_{ij_{x}}}{dy_{j}} &= 48\left(\frac{ds(r_{ij})}{dy_{j}}\cdot x_{ij} + s(r_{ij})\cdot \frac{dx_{ij}}{dy_{j}}\right) \nonumber \\
+&= 48\left(-\frac{ds(r_{ij})}{dy_{i}}\cdot x_{ij}\right) \nonumber\\
+& = -\frac{df_{ij_{x}}}{dy_{i}}. \label{eqn:negative_j_point_derivative_y}
+\end{align}
+We extend these equations to all three components, and get that
+$$
+\renewcommand\arraystretch{1.5}
+\frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{i}} = 
+	\begin{pmatrix}
+		s(r_{ij}) & 0 & 0 \\
+		0 & s(r_{ij}) & 0 \\
+		0 & 0 & s(r_{ij})
+	\end{pmatrix} + 48\left(-14\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(\frac{1}{r_{ij}}\right)^{10}\right)\vec{r}_{ij}^{T}\vec{r}_{ij},
+$$ where $\vec{r}_{ij} = \begin{psmallmatrix} x_{i} - x_{j} \\ y_{i} - y{_j} \\ z_{i} - z_{j}\end{psmallmatrix}$.
+Lastly, we need the following relations
+\begin{align}
+\frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{j}} &= -\frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{i}} \qquad \qquad \qquad \qquad\cdots \mbox{  from Equations \ref{eqn:negative_j_point_derivative_x} and \ref{eqn:negative_j_point_derivative_y}}, \\
+\frac{\partial \vec{f}_{ji}}{\partial \vec{p}_{i}} &= -\frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{i}} \qquad \qquad \qquad \qquad\cdots \mbox{  as } \vec{f}_{ji} = -\vec{f}_{ji}, \\
+\frac{\partial \vec{f}_{ji}}{\partial \vec{p}_{j}} &= -\frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{j}} = \frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{i}}
+\end{align}
 \end{document}
