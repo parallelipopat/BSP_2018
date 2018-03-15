@@ -6,8 +6,7 @@
 
 One of the most seminal works in Molecular Dynamics was Dr. Aneesur Rahman's 1964 paper \cite{Rahman1964} ``Correlations in the Motion of Atoms in Lquid Argon'', where a system of 864 argon atoms was simulated on a CDC 3600 computer using a predictor-corrector method and the computed quantities were matched against the empirical values. This was followed by a paper in 1967 \cite{Verlet1967} by Dr. Loup Verlet, which introduced the Verlet Integration method for the same model of 864 argon atoms.
 
-In this section, we will look at replicating the aforementioned simulation for a system of 864 (a seemingly arbitrary choice) atoms of argon. Once set up, we will use the Velocity Verlet method (a modern variant of Verlet Integration) to calculate the motion of the particles, and observe how quantities such as temperature and local pressure behave over a long time period.
-
+In this section, we look at setting up the molecular dynamics simulation as described in the aforementioned papers. We focus consider the basic foundations of the simulation such as inter-particle potentials and interaction, and then introduce certain techniques that help us implement these foundations in a manner that would not be computationally expensive.
 
 \subsection{Hamiltonian Equation}
 

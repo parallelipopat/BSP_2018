@@ -13,5 +13,5 @@ function [num_particles, epsilon, sigma, r_cutoff, mass, density, kB, temperatur
     N_s = 10;
     N_n = 10;
     beta = 0.25; %can't exceed 0.5
-    gamma = 0.50;
+    gamma = 0.25;
 end

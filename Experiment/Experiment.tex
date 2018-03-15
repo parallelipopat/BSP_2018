@@ -28,10 +28,8 @@ We will assume that the simulations have the following initial configuration (un
 
 The last four elements in the table indicate that the simulation will initially be equilibrated for 100 iterations, and then run for 500 iterations where samples will be collected every 10 iterations (giving a total of 50 samples). The list of neighbours will be updated every 10 iterations in both the equilibration and final stages.
 
-\subsection{Geometric Invariants}
-
-We first expand on the geometric invariants of the molecular dynamics system. \\\
-The system is time reversible - if we go from state $s_{1}$ to state $s_{2}$ in time $\delta t$, then we return to state $s_{1}$ from state $s_{2}$ in time $\delta t$ by reversing the signs on the velocities. This can be seen by applying the transformation $t \mapsto -t$ to Equation~\ref{eqn:mol_hamiltonian_separate} - the position $q$ does not change, but the sign on momentum $p$ gets reversed.
+\subsection{Time Reversibility}
+The molecular dynamics system is time reversible - if we go from state $s_{1}$ to state $s_{2}$ in time $\delta t$, then we can return to state $s_{1}$ from state $s_{2}$ in time $\delta t$ by reversing the signs on the velocities. This can be seen formally by applying the transformation $t \mapsto -t$ to Equation~\ref{eqn:mol_hamiltonian_separate} - the position $q$ does not change, but the sign on momentum $p$ gets reversed.
 \begin{align*}
 q \mapsto q = \tilde{q},  \quad \quad p \mapsto -p = \tilde{p}.
 \end{align*}
@@ -42,12 +40,120 @@ Then
 \end{alignat*}
 Thus, the Hamiltonian system is time reversible.
 
-Conservation of total energy, linear momentum and angular momentum follow readily from Newton's Laws of Motion, as there is no external force on the system. We introduce the concept of first integrals that will make it simpler to check which methods conserve energy and momentum. \\
-A non-constant function $I(y)$ is a \textit{first integral} (or invariant) of the  differential equation $\dot{y} = F(y)$ if $I(y(t))$ is constant along every solution, or equivalently, if
+We say that a numerical one-step method $\Phi_{h}: (\vec{x}_{i},\vec{v}_{i}) \mapsto (\vec{x}_{i+1},\vec{v}_{i+1})$ is time reversible if $\Phi_{h} = \Phi_{-h}^{-1}$. Informally, this means that if we exchange $i \leftrightarrow i+1$ and replace $h$ by $-h$ in our origina method, then we should get the same method back.
+In order to ascertain which Newmark Beta methods are reversible, we cite \cite{Paganini2017}:
+\begin{theorem}The maximal order of a reversible one-step method is always even. \label{thm:reversible_even_order} \end{theorem}
+ As Newmark Beta methods have maximal order 2 only if $\gamma = \frac{1}{2}$, the contrapositive of \ref{thm:reversible_even_order} states that any scheme with $\gamma \neq \frac{1}{2}$ is not reversible. Now, we claim
+\begin{claim} Any Newmark Beta method with $\gamma = \frac{1}{2}$  is reversible. \end{claim}
+\begin{proof}
+A Newmark Beta scheme with $\gamma = \frac{1}{2}$ has the form
 \begin{align}
-\nabla I(y)F(y) = 0    \quad \quad \quad  \forall y. \quad \cite{HarierLubichWanner2003}
+		\vec{v}_{i+1} & = \vec{v}_{i} + h\left(\frac{1}{2}\vec{a}_{i} + \frac{1}{2}\vec{a}_{i+1}\right), \label{eqn:target_reversible_newmark-beta_v}\\
+		\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\left[(1-2\beta)\vec{a}_{i} + 2\beta\vec{a}_{i+1}\right].  \label{eqn:target_reversible_newmark-beta_x} 
 \end{align}
-We now give proofs that the total energy, total linear momentum, and total angular momentum are first integrals \cite{HarierLubichWanner2003}.
+Swapping $i \leftrightarrow i+1$ and replacing $h$ with $-h$
+\begin{align}
+		\vec{v}_{i} & = \vec{v}_{i+1} - h\left(\frac{1}{2}\vec{a}_{i+1} + \frac{1}{2}\vec{a}_{i}\right),  \label{eqn:current_reversible_newmark-beta_v}\\
+		\vec{x}_{i} & = \vec{x}_{i+1} - h\vec{v}_{i+1} + \frac{h^2}{2}\left[(1-2\beta)\vec{a}_{i+1} + 2\beta\vec{a}_{i}\right]. \label{eqn:current_reversible_newmark-beta_x} 
+\end{align}
+It is straight-forward to see that Equation~\ref{eqn:current_reversible_newmark-beta_v} is the same as Equation~\ref{eqn:target_reversible_newmark-beta_v}.
+For Equation~\ref{eqn:current_reversible_newmark-beta_x}, we see
+\begin{align*}
+	\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i+1} - \frac{h^2}{2}\left[(1-2\beta)\vec{a}_{i+1} + 2\beta\vec{a}_{i}\right] \\
+	& = \vec{x}_{i} + h\left(\vec{v}_{i} + \frac{h}{2}\vec{a}_{i} + \frac{h}{2}\vec{a}_{i+1}\right) - \frac{h^2}{2}\left[(1-2\beta)\vec{a}_{i+1} + 2\beta\vec{a}_{i}\right] \\
+	& = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\left[\left(1-2\beta\right)\vec{a}_{i} + 2\beta\vec{a}_{i+1}\right].
+\end{align*} 
+\end{proof} 
+
+\subsection*{Aside: First Integrals}
+The next three invariants - total energy, linear momentum, and angular momentum - follow readily from Newton's Laws of Motion as there is no external force on the system. In order to simplify checking which methods preserve these invariants the best, we introduce the concept of first integrals. \\
+A non-constant function $I(y)$ is a \textit{first integral} (or invariant) of the differential equation $\dot{y} = F(y)$ if $I(y(t))$ is constant along every solution, or equivalently, if
+\begin{align}
+\nabla I(y)F(y) = 0    \quad \quad \quad  \forall y. \quad \cite{HarierLubichWanner2003} \label{eqn:grad_first_integral_zero}
+\end{align}
+Total energy, total linear momentum, and total angular momentum are all first integrals \cite{HarierLubichWanner2003}. We look at proving this in the next subsections, adapting the proofs from \cite{HarierLubichWanner2003}.
+
+\subsection{Total Linear Momentum}
+ 
+\begin{theorem} Total linear momentum $P = \sum_{i=1}^{N} p_{i}$ is a first integral. \end{theorem}
+\begin{proof}
+\begin{align*}
+\nabla P & = \frac{dP}{dt} = \sum_{i=1}^{N} \frac{dp_{i}}{dt} \\
+&=\sum_{i=1}^{N}\sum_{j=1}^{N}\nu_{ij}\left(q_{i} - q_{j}\right) \\
+& = 0 \qquad \qquad \qquad \qquad \cdots \mbox{ as }\nu_{ij} = \nu_{ji} \forall i, j
+\end{align*}
+\end{proof} 
+
+Total linear momentum - as the name suggests - is a linear first integral. Most numerical methods preserve linear first integrals - in fact, it is a property shared by all Runge-Kutta methods. Indeed, this holds true for the entire family of Newmark Beta methods as well.
+\begin{claim} All Newmark Beta methods preserve linear first integrals \end{claim}
+\begin{proof}
+Let $I(\vec{x}, \vec{v}) = b^{T}\vec{x} + c^{T}\vec{v}$ be a linear first integral, where $b$ and $c$ are some constant vectors.
+By the defintion of first integrals, we want that $I'(\vec{x}, \vec{v})= 0$ for all $\vec{x}, \vec{v}$.
+But $I'(\vec{x}, \vec{v}) = b^{T}\vec{v} + c^{T}\vec{a(\vec{x})}\ = 0$, implying that $b^{T} = 0$ and $c^{T}\vec{a}(\vec{x}) = 0$ for all $\vec{x}$. So, $I(\vec{x}, \vec{v}) = I(\vec{v}) = c^{T}\vec{v}$ (This makes sense in a real-world scenario as total linear momentum depends only on the velocity of the body, and not its position).\\
+Now, we multiply $c^{T}$ to the velocity portion of the Newmark Beta method and get that
+\begin{align*}
+I\left(\vec{v}_{i+1}\right) &= c^{T}\vec{v}_{i+1} \\
+&= c^{T}\vec{v}_{i} + h\left[\left(1-\gamma\right)c^{T}\vec{a}(\vec{x}_{i}) + \gamma c^{T}\vec{a}(\vec{x}_{i+1})\right] \\
+&= c^{T}\vec{v}_{i} = I\left(\vec{v}_{i}\right)
+\end{align*} 
+\end{proof}
+
+\subsection{Total Angular Momentum}
+
+\begin{theorem} Total angular momentum $L = \sum_{i=1}^{N} q_{i} \times p_{i}$ is a first integral. \end{theorem}
+\begin{proof}
+\begin{align*}
+\nabla L & = \sum_{i=1}^{N} \frac{d}{dt} \left(q_{i} \times p_{i}\right) \\
+& = \sum_{i=1}^{N} \left(\dot{q}_{i} \times p_{i} + {q}_{i} \times \dot{p}_{i}\right) \\  
+& = \sum_{i=1}^{N} \left( \frac{1}{m_{i}}p_{i} \times p_{i} + q_{i} \times \sum_{j=1}^{N}\nu_{ij}\left(q_{i} - q_{j}\right)\right) \\  
+& = \sum_{i=1}^{N} \left( \frac{1}{m_{i}}p_{i} \times p_{i}\right) +  \sum_{i=1}^{N}\sum_{j=1}^{N} \left(q_{i} \times \nu_{ij}\left(q_{i} - q_{j}\right)\right) \\
+& = 0  \qquad \qquad \qquad \qquad \cdots \mbox{ as }\nu_{ij} = \nu_{ji} \mbox{ and } p_{i} \times p_{i} = 0 \,\forall i, j
+\end{align*}
+\end{proof}
+
+Total angular momentum is a quadratic first integral. By Noether's Theorem, it has the form $I(\vec{x}, \vec{v}) = \vec{v}^{T}\left(C\vec{x} + d\right)$, where $C$ is a constant square matrix and $d$ is a constant vector \cite{HarierLubichWanner2003}.
+We have the Velocity Verlet method preserves quadratic integrals of this form, and hence, total angular momentum. To see this, we need to express it as the composition of two half-step methods:
+\begin{align}
+	\begin{split}
+		\vec{v}_{i+\frac{1}{2}} = \vec{v}_{i} + \frac{h}{2}\vec{a}(\vec{x}_{i}) \\
+		\vec{x}_{i+\frac{1}{2}} = \vec{x}_{i} + \frac{h}{2}\vec{v}_{i+\frac{1}{2}}
+	\end{split}
+\end{align}
+and
+\begin{align}
+	\begin{split}
+		\vec{x}_{i+1} = \vec{x}_{i+ \frac{1}{2}} + \frac{h}{2}\vec{v}_{i+\frac{1}{2}} \\
+		\vec{v}_{i+1} = \vec{v}_{i+\frac{1}{2}} + \frac{h}{2}\vec{a}(\vec{x}_{i+1})
+	\end{split} \label{velocity_verlet_split_2}
+\end{align}
+
+\begin{theorem} The Velocity Verlet algorithm preserves quadratic first integrals of the form $I(\vec{x}, \vec{v}) = \vec{v}^{T}\left(C\vec{x} + d\right)$ \end{theorem}
+\begin{proof}
+We have that $I'(\vec{x}, \vec{v}) = \vec{a}(\vec{x})^{T}\left(C\vec{x} + d\right) + \vec{v}^{T}C\vec{v} = 0$ for all $\vec{x}, \vec{v}$.
+Now,
+\begin{align*}
+\vec{v}_{i+\frac{1}{2}}^{T}\left(C\vec{x}_{i+\frac{1}{2}} + d\right) &= \vec{v}_{i+\frac{1}{2}}^{T}\left(C\vec{x}_{i} + \frac{h}{2}C\vec{v}_{i+\frac{1}{2}} + d\right) \\
+&= \vec{v}_{i+\frac{1}{2}}^{T}\left(C\vec{x}_{i} + d\right) + \frac{h}{2}\vec{v}_{i+\frac{1}{2}}^{T}C\vec{v}_{i+\frac{1}{2}} \\
+&= \left(\vec{v}_{i} + \frac{h}{2}\vec{a}(\vec{x}_{i})\right)^{T}\left(C\vec{x}_{i} + d\right)+ \frac{h}{2}\vec{v}_{i+\frac{1}{2}}^{T}C\vec{v}_{i+\frac{1}{2}} \\
+&=\vec{v}_{i}^{T}(C\vec{x}_{i} + d) + \frac{h}{2}\left( \vec{a}(\vec{x}_{i})^{T}(C\vec{x}_{i} + d) + \vec{v}_{i+\frac{1}{2}}^{T}C\vec{v}_{i+\frac{1}{2}}\right) \\
+&=\vec{v}_{i}^{T}(C\vec{x}_{i} + d) + I'(\vec{x}_{i}, \vec{v}_{i+\frac{1}{2}}) \\
+&=\vec{v}_{i}^{T}(C\vec{x}_{i} + d)
+\end{align*}
+
+Similarly, we get from Equation~\ref{velocity_verlet_split_2} that
+\begin{align*}
+I(\vec{x}_{i+1}, \vec{v}_{i+1}) &=\vec{v}_{i+1}^{T}(C\vec{x}_{i+1} + d) \\
+&= \vec{v}_{i+\frac{1}{2}}^{T}\left(C\vec{x}_{i+\frac{1}{2}} + d\right) \\
+&=\vec{v}_{i}^{T}(C\vec{x}_{i} + d) \\
+&= I(\vec{x}_{i}, \vec{v}_{i})
+\end{align*}
+\end{proof}
+
+It is unclear whether any other Newmark Beta method preserves angular momentum. Firstly, no other Newmark Beta method can be expressed as the composition of two methods - so, we can't adapt the proof given above. Secondly, we need that $\vec{v}_{i+1}^{T}(C\vec{x}_{i+1} + d)=\vec{v}_{i}^{T}(C\vec{x}_{i} + d)$. In the implicit case, there is a term $h^{2}\beta\vec{a}(\vec{x}_{i+1})$ in the expansion of $\vec{x}_{i+1}$. As we can see in the proof above, terms of the form $\vec{a}(\vec{x})$ need to be transposed so that they can disappear. As a result, the term $h^{2}\beta\vec{a}(\vec{x}_{i+1})$ won't disappear, and will propagate through the equation.
+
+
+\subsection{Total Energy}
+
 \begin{theorem} The total energy, or the Hamiltonian (Equation~\ref{eqn:mol_hamiltonian}) is a first integral. \end{theorem}
 \begin{proof}
 $$
@@ -71,86 +177,5 @@ H'(p, q) \cdot \frac{dH}{dt} = \nabla_{p}H^{T}\cdot-\nabla_{q}H + \nabla_{q}H^{T
 $$ 
 \end{proof} 
 
-\begin{theorem} Total linear momentum $P = \sum_{i=1}^{N} p_{i}$ is a first integral. \end{theorem}
-\begin{proof}
-\begin{align*}
-\nabla P & = \frac{dP}{dt} = \sum_{i=1}^{N} \frac{dp_{i}}{dt} \\
-&=\sum_{i=1}^{N}\sum_{j=1}^{N}\nu_{ij}\left(q_{i} - q_{j}\right) \\
-& = 0 \qquad \qquad \qquad \qquad \cdots \mbox{ as }\nu_{ij} = \nu_{ji} \forall i, j
-\end{align*}
-\end{proof} 
-
-\begin{theorem} Total angular momentum $L = \sum_{i=1}^{N} q_{i} \times p_{i}$ is a first integral. \end{theorem}
-\begin{proof}
-\begin{align*}
-\nabla L & = \sum_{i=1}^{N} \frac{d}{dt} \left(q_{i} \times p_{i}\right) \\
-& = \sum_{i=1}^{N} \left(\dot{q}_{i} \times p_{i} + {q}_{i} \times \dot{p}_{i}\right) \\  
-& = \sum_{i=1}^{N} \left( \frac{1}{m_{i}}p_{i} \times p_{i} + q_{i} \times \sum_{j=1}^{N}\nu_{ij}\left(q_{i} - q_{j}\right)\right) \\  
-& = \sum_{i=1}^{N} \left( \frac{1}{m_{i}}p_{i} \times p_{i}\right) +  \sum_{i=1}^{N}\sum_{j=1}^{N} \left(q_{i} \times \nu_{ij}\left(q_{i} - q_{j}\right)\right) \\
-& = 0  \qquad \qquad \qquad \qquad \cdots \mbox{ as }\nu_{ij} = \nu_{ji} \mbox{ and } p_{i} \times p_{i} =  \forall i, j
-\end{align*}
-\end{proof}
- We have that total energy and total angular momentum are quadratic first integrals, and total linear momentum - as the name suggests - is a linear first integral.
-
-Most numerical methods preserve linear first integrals - in fact, it is a property shared by all Runge-Kutta methods. Indeed, this holds true for the entire family of Newmark Beta methods as well.
-
-\begin{claim} All Newmark Beta methods preserve linear first integrals \end{claim}
-\begin{proof}
-Let $I(\vec{x}, \vec{v}) = b^{T}\vec{x} + c^{T}\vec{v}$ be a linear first integral, where $b$ and $c$ are some constant vectors.
-By the defintion of first integrals, we want that $I'(\vec{x}, \vec{v})= 0$ for all $\vec{x}, \vec{v}$.
-But $I'(\vec{x}, \vec{v}) = b^{T}\vec{v} + c^{T}\vec{a(\vec{x})}\ = 0$, implying that $b^{T} = 0$ and $c^{T}\vec{a} = 0$ for all $\vec{x}$. So, $I(\vec{x}, \vec{v}) = I(\vec{v}) = c^{T}\vec{v}$ (This makes sense as a linear first integral, total linear momentum, depends only on the velocities of the particles, and not the positions).\\
-Now, we multiply $c^{T}$ to the velocity portion of the Newmark Beta method and get that
-\begin{align*}
-I\left(\vec{v}_{i+1}\right) &= c^{T}\vec{v}_{i+1} \\
-&= c^{T}\vec{v}_{i} + h\left[\left(1-\gamma\right)c^{T}\vec{a}(\vec{x}_{i}) + \gamma c^{T}\vec{a}(\vec{x}_{i+1})\right] \\
-&= c^{T}\vec{v}_{i} = I\left(\vec{v}_{i}\right)
-\end{align*} 
-\end{proof}
-
-We cannot make a similar claim regarding the preservation of quadratic first integrals, but we can certainly simplify our work. Noether's Theorem states for the Hamiltonian $H(p, q)$ of the form Equation~\ref{eqn:mol_hamiltonian}, all quad
-
-\subsection{Explicit Newmark Beta schemes}
-
-Recall from Equation~\ref{eqn:newmark-beta} that a Newmark Beta method has the form
-\begin{align*}
-		\vec{v}_{i+1} & = \vec{v}_{i} + h\left[\left(1-\gamma\right)\vec{a}_{i} + \gamma\vec{a}_{i+1}\left(\vec{x}_{i+1}\right)\right], \\
-		\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\left[\left(1-2\beta \right)\vec{a}_{i} + 2\beta\vec{a}_{i+1}\left(\vec{x}_{i+1}\right)\right], 
-\end{align*}with $\beta \in \left[0,0.5\right]$ and $\gamma \in \left[0,1\right]$.
-Setting $\beta = 0$, we get
-\begin{align}
-	\begin{split}
-		\vec{v}_{i+1} & = \vec{v}_{i} + h\left[\left(1-\gamma\right)\vec{a}_{i} + \gamma\vec{a}_{i+1}\right], \\
-		\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\vec{a}_{i},
-	\end{split} \label{explicit_newmark-beta}  
-\end{align}
-which is explicit in both equations (and hence, known as the Explicit Newmark Beta form).
-
-\subsubsection{Preservation of Reversibility}
-It is pretty straightforward to find the values of $\gamma$ that preserve the reversibility to the system. From \cite{Paganini2017}, we have
-\begin{theorem}The maximal order of a reversible one-step method is always even. \label{thm:reversible_even_order} \end{theorem}
- As Newmark-Beta methods have maximal order 2 only if $\gamma = \frac{1}{2}$, we get from the contrapositive of \ref{thm:reversible_even_order} that any explicit scheme with $\gamma \neq \frac{1}{2}$ is not reversible.
-\begin{claim} The Velocity Verlet algorithm is reversible. \end{claim}
-\begin{proof}
-The Velocity Verlet algorithm is
-\begin{align}
-		\vec{v}_{i+1} & = \vec{v}_{i} + h\left(\frac{1}{2}\vec{a}_{i} + \frac{1}{2}\vec{a}_{i+1}\right), \label{eqn:target_reversible_velocity_verlet_v}\\
-		\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\vec{a}_{i} \label{eqn:target_reversible_velocity_verlet_x} 
-\end{align}
-Swapping $i \leftrightarrow i+1$ and $h \leftrightarrow -h$
-\begin{align}
-		\vec{v}_{i} & = \vec{v}_{i+1} - h\left(\frac{1}{2}\vec{a}_{i+1} + \frac{1}{2}\vec{a}_{i}\right),  \label{eqn:current_reversible_velocity_verlet_v}\\
-		\vec{x}_{i} & = \vec{x}_{i+1} - h\vec{v}_{i+1} + \frac{h^2}{2}\vec{a}_{i+1} \label{eqn:current_reversible_velocity_verlet_x} 
-\end{align}
-It is straight-forward to see that Equation~\ref{eqn:current_reversible_velocity_verlet_v} is the same as Equation~\ref{eqn:target_reversible_velocity_verlet_v}.
-For Equation~\ref{eqn:current_reversible_velocity_verlet_x}, we see
-\begin{align*}
-	\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i+1} - \frac{h^2}{2}\vec{a}_{i+1} \\
-	& = \vec{x}_{i} + h\left(\vec{v}_{i} + \frac{h}{2}\vec{a}_{i} + \frac{h}{2}\vec{a}_{i+1}\right) - \frac{h^2}{2}\vec{a}_{i+1} \\
-	& = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\vec{a}_{i}
-\end{align*} 
-\end{proof} 
-
-
-\subsection{Implicit Newmark Beta schemes}
 
 \end{document}
