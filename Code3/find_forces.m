@@ -19,7 +19,8 @@ function [forces, potential_energy, jacobian_matrix] = find_forces(num_particles
                 forces(i:i+2) = forces(i:i+2) + force_factor*diff_r;
                 forces(j:j+2) = forces(j:j+2) - force_factor*diff_r;
                 
-                jacobian_factor = (sigma_6/dist_r_10)*((14*sigma_6/dist_r_6) - 4);
+                jacobian_factor = (sigma_6/dist_r_10)*((-14*sigma_6/dist_r_6) + 4);
+                a = diff_r * diff_r';
                 jacobian_force_block = force_factor*eye(3) + jacobian_factor*(diff_r * diff_r');
                 
                 jacobian_matrix(i:i+2,i:i+2) = jacobian_matrix(i:i+2,i:i+2) + jacobian_force_block;

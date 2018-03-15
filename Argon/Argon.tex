@@ -179,16 +179,13 @@ We shorten the above algorithm by making use of MATLAB's vector operations: \mco
 
 \subsection{Cut-off Potential and Neighbour Lists}
 
-A final consideration for our molecular dynamics simulation is the number of times we are evaluating the forces, and how many of these evaluations are effective. Looking at the graph of the Lennard-Jones Potential in Figure~\ref{fig:lennard-jones_potential}, we see that the potential tends to zero as the inter-particle distance increases. Furthermore, the potential does not change much for over larger distances - implying that it is not efficient to consider interactions over all inter-particle distances. Rather, we can define a cut-off distance, $r_{c}$, beyond which the potential is zero. This is equivalent to shifting the Lennard-Jones Potential
+A final consideration for our molecular dynamics simulation is the number of times we are evaluating the forces, and how many of these evaluations are effective. Looking at the graph of the Lennard-Jones Potential in Figure~\ref{fig:lennard-jones_potential}, we see that the potential tends to zero as the inter-particle distance increases. Furthermore, the potential does not change much for over larger distances - implying that it is not efficient to consider interactions over all inter-particle distances. Rather, we can define a cut-off distance, $r_{c}$, beyond which the potential is zero. We neeed to now shift the Lennard-Jones Potential; otherwise the potential will have a discontinuity at $r_{c}$ and Newton's Laws of Motion do not hold at discontinuities. So, we get the shifted Lennard-Jones potential
 \begin{align}
-	V\left(\vec{r}_{ij}\right) = \left\{
-		\begin{array}{lll}
-			4 \left[ \left(\left( \frac{1}{r_{ij}}\right)^{12} - \left( \frac{1}{r_{ij}}\right)^{6}\right) - \Bigg(\bigg( \frac{1}{r_{c}}\bigg)^{12} - \bigg( \frac{1}{r_{c}}\bigg)^{6}\Bigg) \right] &, & \quad r_{ij} \leq r_{c} \\
-			0&, & \quad otherwise 
-		\end{array} \label{eqn:lennard-jones_potential_reduced_shifted}
-	\right.
+	V\left(\vec{r}_{ij}\right) = \begin{dcases}
+			4 \left[ \left(\left( \frac{1}{r_{ij}}\right)^{12} - \left( \frac{1}{r_{ij}}\right)^{6}\right) - \Bigg(\bigg( \frac{1}{r_{c}}\bigg)^{12} - \bigg( \frac{1}{r_{c}}\bigg)^{6}\Bigg) \right]&,\quad  \mbox{if } r_{ij} \leq r_{c} \\
+			0&,\quad \mbox{otherwise} 
+	\end{dcases} \label{eqn:lennard-jones_potential_reduced_shifted}
 \end{align}
-
 What is the optimal value for $r_{c}$? Periodic boundary conditions enforce that $r_{c} < \frac{L}{2}$ (as particles can only interact with particles in the same box). Generally, $r_{c} \leq \frac{L}{4}$\cite{FrenkelSmit2001}. In our simulations, we have $L = 10.229\,\sigma^{*}$; so, we define $r_{c} = 2.5\,\sigma^{*}$. We substitute this into Equation~\ref{eqn:lennard-jones_potential_reduced} and confirm that this is a good choice: $V(2.5) = -0.0163$, $V(2.6) = -0.0129$, and $V(3) = -0.005479$. The  loss in potential by setting $r_{c} = 2.5\,\sigma^{*}$ is minimal. The effect on computing time is phenomenal - only $6.3\%$ of all pairwise distances are smaller than $2.5\,\sigma^{*}$, thus eliminating $93.7\%$ of the computing power intensive force calculations.
 
 As we saw earlier, repeated conditional checks are not very efficient, and consume a lot of time. This is especially expensive if each iteration of the simulation involved calculating the inter-particle distance and checking if that distance is lesser than $2.5 \sigma^{*}$ - around $400,000$ checks per iteration! Assuming that the positions of the particles do not vary much in each successive iteration, we can calculate a list of `neighbours' for each particle at the start of the simulation. However, it cannot be guaranteed that this list will be accurate for the entire run of the simulation. In fact, tests conducted with the Velocity Verlet algorithm show that this list is only $80\%$ accurate after 10 iterations, and $50\%$ accurate after 35 iterations. Clearly, we can't use the same list for the entire simulation.
@@ -234,15 +231,15 @@ J = \begin{pmatrix}
 \end{pmatrix},
 $$
 where $\vec{f}_{i} = \sum_{i=1}^{N} \vec{f}_{ij}$, $\vec{p}_{i} = \begin{psmallmatrix} x_{i} \\ y_{i} \\ z_{i} \end{psmallmatrix}$, and \\
-$$
+\begin{align}
 \renewcommand\arraystretch{1.5}
 \frac{\partial \vec{f}_{i}}{\partial \vec{p}_{j}} =
 	\begin{pmatrix}
 		\frac{\partial f_{i_{x}}}{\partial x_{j}}  & \frac{\partial f_{i_{x}}}{\partial y_{j}} & \frac{\partial f_{i_{x}}}{\partial z_{j}} \\
 		\frac{\partial f_{i_{y}}}{\partial x_{j}}  & \frac{\partial f_{i_{y}}}{\partial y_{j}} & \frac{\partial f_{i_{y}}}{\partial z_{j}} \\
 		\frac{\partial f_{i_{z}}}{\partial x_{j}}  & \frac{\partial f_{i_{z}}}{\partial y_{j}} & \frac{\partial f_{i_{z}}}{\partial z_{j}} 	
-	\end{pmatrix},
-$$
+	\end{pmatrix}, \label{eqn:block_derivative_fi_pj}
+\end{align}
 where $f_{i_{x}}$ is the x-component of the force $\vec{f}_{i}$. \\
 Now, we have from Equation~\ref{eqn:lennard-jones_force_reduced_one_atom}
 \begin{align*}
@@ -258,7 +255,7 @@ Focusing on just $f_{ij_{x}}$ for some $i$ and $j$, we write $f_{ij_{x}} = 48s(r
 Then,
 \begin{align}
 \frac{df_{ij_{x}}}{dx_{i}} &= 48\left(\frac{ds(r_{ij})}{dx_{i}}\cdot x_{ij} + s(r_{ij})\cdot \frac{dx_{ij}}{dx_{i}}\right) \nonumber \\
-&= 48\left(-14\left(x_{i} - x_{j}\right)^{2}\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(x_{i} - x_{j}\right)^{2}\left(\frac{1}{r_{ij}}\right)^{10} +  s(r_{ij})\right), \nonumber \\
+&= 48\left(-14\left(x_{i} - x_{j}\right)^{2}\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(x_{i} - x_{j}\right)^{2}\left(\frac{1}{r_{ij}}\right)^{10} +  s(r_{ij})\right), \label{eqn:i_point_derivate_x_i} \\
 \frac{df_{ij_{x}}}{dx_{j}} &= 48\left(\frac{ds(r_{ij})}{dx_{j}}\cdot x_{ij} + s(r_{ij})\cdot \frac{dx_{ij}}{dx_{j}}\right) \nonumber \\
 &= 48\left(- \frac{ds(r_{ij})}{dx_{i}}\cdot x_{ij} - s(r_{ij})\right) \nonumber \\
 &= -\frac{df_{ij_{x}}}{dx_{i}}. \label{eqn:negative_j_point_derivative_x}
@@ -266,12 +263,12 @@ Then,
 Furthermore,
 \begin{align}
 \frac{df_{ij_{x}}}{dy_{i}} &= 48\left(\frac{ds(r_{ij})}{dy_{i}}\cdot x_{ij} + s(r_{ij})\cdot \frac{dx_{ij}}{dy_{i}}\right) \nonumber \\
-&= 48\left(-14\left(x_{i} - x_{j}\right)\left(y_{i} - y_{j}\right)\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(x_{i} - x_{j}\right)\left(y_{i} - y_{j}\right)\left(\frac{1}{r_{ij}}\right)^{10}\right), \nonumber \\
+&= 48\left(-14\left(x_{i} - x_{j}\right)\left(y_{i} - y_{j}\right)\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(x_{i} - x_{j}\right)\left(y_{i} - y_{j}\right)\left(\frac{1}{r_{ij}}\right)^{10}\right), \label{eqn:i_point_derivate_y_i} \\
 \frac{df_{ij_{x}}}{dy_{j}} &= 48\left(\frac{ds(r_{ij})}{dy_{j}}\cdot x_{ij} + s(r_{ij})\cdot \frac{dx_{ij}}{dy_{j}}\right) \nonumber \\
 &= 48\left(-\frac{ds(r_{ij})}{dy_{i}}\cdot x_{ij}\right) \nonumber\\
 & = -\frac{df_{ij_{x}}}{dy_{i}}. \label{eqn:negative_j_point_derivative_y}
 \end{align}
-We extend these equations to all three components, and get that
+We extend these equations to all three components, and get from Equations~\ref{eqn:i_point_derivate_x_i} and \ref{eqn:i_point_derivate_y_i} that 
 $$
 \renewcommand\arraystretch{1.5}
 \frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{i}} = 
@@ -279,12 +276,14 @@ $$
 		s(r_{ij}) & 0 & 0 \\
 		0 & s(r_{ij}) & 0 \\
 		0 & 0 & s(r_{ij})
-	\end{pmatrix} + 48\left(-14\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(\frac{1}{r_{ij}}\right)^{10}\right)\vec{r}_{ij}^{T}\vec{r}_{ij},
+	\end{pmatrix} + 48\left(-14\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(\frac{1}{r_{ij}}\right)^{10}\right)\vec{r}_{ij}\vec{r}_{ij}^{T},
 $$ where $\vec{r}_{ij} = \begin{psmallmatrix} x_{i} - x_{j} \\ y_{i} - y{_j} \\ z_{i} - z_{j}\end{psmallmatrix}$.
 Lastly, we need the following relations
-\begin{align}
+\begin{align*}
 \frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{j}} &= -\frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{i}} \qquad \qquad \qquad \qquad\cdots \mbox{  from Equations \ref{eqn:negative_j_point_derivative_x} and \ref{eqn:negative_j_point_derivative_y}}, \\
 \frac{\partial \vec{f}_{ji}}{\partial \vec{p}_{i}} &= -\frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{i}} \qquad \qquad \qquad \qquad\cdots \mbox{  as } \vec{f}_{ji} = -\vec{f}_{ji}, \\
 \frac{\partial \vec{f}_{ji}}{\partial \vec{p}_{j}} &= -\frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{j}} = \frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{i}}
-\end{align}
+\end{align*}
+
+Now, we can use the last four relations to populate Equation~\ref{eqn:block_derivative_fi_pj}, and we can calculate the Jacobian.
 \end{document}
