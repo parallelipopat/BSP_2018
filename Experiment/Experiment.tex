@@ -44,7 +44,7 @@ We say that a numerical one-step method $\Phi_{h}: (\vec{x}_{i},\vec{v}_{i}) \ma
 In order to ascertain which Newmark Beta methods are reversible, we cite \cite{Paganini2017}:
 \begin{theorem}The maximal order of a reversible one-step method is always even. \label{thm:reversible_even_order} \end{theorem}
  As Newmark Beta methods have maximal order 2 only if $\gamma = \frac{1}{2}$, the contrapositive of \ref{thm:reversible_even_order} states that any scheme with $\gamma \neq \frac{1}{2}$ is not reversible. Now, we claim
-\begin{claim} Any Newmark Beta method with $\gamma = \frac{1}{2}$  is reversible. \end{claim}
+\begin{claim} Any Newmark Beta method with $\gamma = \frac{1}{2}$  is reversible. \label{clm:gamma_half_reversible} \end{claim}
 \begin{proof}
 A Newmark Beta scheme with $\gamma = \frac{1}{2}$ has the form
 \begin{align}
@@ -174,7 +174,7 @@ and
 	\end{split} \label{velocity_verlet_split_2}
 \end{align}
 
-\begin{theorem} The Velocity Verlet algorithm preserves quadratic first integrals of the form $I(\vec{x}, \vec{v}) = \vec{v}^{T}\left(C\vec{x} + d\right)$ \end{theorem}
+\begin{theorem} The Velocity Verlet algorithm preserves quadratic first integrals of the form $I(\vec{x}, \vec{v}) = \vec{v}^{T}\left(C\vec{x} + d\right)$ \label{thm:specific_quadratic_first_integral_preservation} \end{theorem}
 \begin{proof}
 We have that $I'(\vec{x}, \vec{v}) = \vec{a}(\vec{x})^{T}\left(C\vec{x} + d\right) + \vec{v}^{T}C\vec{v} = 0$ for all $\vec{x}, \vec{v}$.
 Now,
