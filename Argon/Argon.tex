@@ -245,26 +245,26 @@ Now, we have from Equation~\ref{eqn:lennard-jones_force_reduced_one_atom}
 f_{i_{x}} &= \sum_{j=1}^{N} f_{ij_{x}} \\
 &= \sum_{j\in ngbrs(i)} 48\left[ \left( \frac{1}{r_{ij}}\right)^{14} - \frac{1}{2}\left( \frac{1}{r_{ij}}\right)^{8} \right]x_{ij},
 \end{align*} where $r_{ij} = \sqrt{x_{ij}^{2} + y_{ij}^{2} + z_{ij}^{2}}$, and $ngbrs(i)$ is the list of neighbors of particle $i$. \\
-Focusing on just $f_{ij_{x}}$ for some $i$ and $j$, we write $f_{ij_{x}} = 48s(r_{ij})x_{ij}$. We can see that
+Focusing on just $f_{ij_{x}}$ for some $i$ and $j$, we write $f_{ij_{x}} = 48s_{ij}x_{ij}$. We can see that
 \begin{align*}
-\frac{ds(r_{ij})}{dx_{i}} & = -14\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{10}, \\
-\frac{ds(r_{ij})}{dx_{j}} & = 14\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{16} - 4\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{10} \\
-& = - \frac{ds(r_{ij})}{dx_{i}}.
+\frac{ds_{ij}}{dx_{i}} & = -14\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{10}, \\
+\frac{ds_{ij}}{dx_{j}} & = 14\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{16} - 4\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{10} \\
+& = - \frac{ds_{ij}}{dx_{i}}.
 \end{align*}
 Then,
 \begin{align}
-\frac{df_{ij_{x}}}{dx_{i}} &= 48\left(\frac{ds(r_{ij})}{dx_{i}}\cdot x_{ij} + s(r_{ij})\cdot \frac{dx_{ij}}{dx_{i}}\right) \nonumber \\
-&= 48\left(-14\left(x_{i} - x_{j}\right)^{2}\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(x_{i} - x_{j}\right)^{2}\left(\frac{1}{r_{ij}}\right)^{10} +  s(r_{ij})\right), \label{eqn:i_point_derivate_x_i} \\
-\frac{df_{ij_{x}}}{dx_{j}} &= 48\left(\frac{ds(r_{ij})}{dx_{j}}\cdot x_{ij} + s(r_{ij})\cdot \frac{dx_{ij}}{dx_{j}}\right) \nonumber \\
-&= 48\left(- \frac{ds(r_{ij})}{dx_{i}}\cdot x_{ij} - s(r_{ij})\right) \nonumber \\
+\frac{df_{ij_{x}}}{dx_{i}} &= 48\left(\frac{ds_{ij}}{dx_{i}}\cdot x_{ij} + s_{ij}\cdot \frac{dx_{ij}}{dx_{i}}\right) \nonumber \\
+&= 48\left(-14\left(x_{i} - x_{j}\right)^{2}\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(x_{i} - x_{j}\right)^{2}\left(\frac{1}{r_{ij}}\right)^{10} +  s_{ij}\right), \label{eqn:i_point_derivate_x_i} \\
+\frac{df_{ij_{x}}}{dx_{j}} &= 48\left(\frac{ds_{ij}}{dx_{j}}\cdot x_{ij} + s_{ij}\cdot \frac{dx_{ij}}{dx_{j}}\right) \nonumber \\
+&= 48\left(- \frac{ds_{ij}}{dx_{i}}\cdot x_{ij} - s_{ij}\right) \nonumber \\
 &= -\frac{df_{ij_{x}}}{dx_{i}}. \label{eqn:negative_j_point_derivative_x}
 \end{align}
 Furthermore,
 \begin{align}
-\frac{df_{ij_{x}}}{dy_{i}} &= 48\left(\frac{ds(r_{ij})}{dy_{i}}\cdot x_{ij} + s(r_{ij})\cdot \frac{dx_{ij}}{dy_{i}}\right) \nonumber \\
+\frac{df_{ij_{x}}}{dy_{i}} &= 48\left(\frac{ds_{ij}}{dy_{i}}\cdot x_{ij} + s_{ij}\cdot \frac{dx_{ij}}{dy_{i}}\right) \nonumber \\
 &= 48\left(-14\left(x_{i} - x_{j}\right)\left(y_{i} - y_{j}\right)\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(x_{i} - x_{j}\right)\left(y_{i} - y_{j}\right)\left(\frac{1}{r_{ij}}\right)^{10}\right), \label{eqn:i_point_derivate_y_i} \\
-\frac{df_{ij_{x}}}{dy_{j}} &= 48\left(\frac{ds(r_{ij})}{dy_{j}}\cdot x_{ij} + s(r_{ij})\cdot \frac{dx_{ij}}{dy_{j}}\right) \nonumber \\
-&= 48\left(-\frac{ds(r_{ij})}{dy_{i}}\cdot x_{ij}\right) \nonumber\\
+\frac{df_{ij_{x}}}{dy_{j}} &= 48\left(\frac{ds_{ij}}{dy_{j}}\cdot x_{ij} + s_{ij}\cdot \frac{dx_{ij}}{dy_{j}}\right) \nonumber \\
+&= 48\left(-\frac{ds_{ij}}{dy_{i}}\cdot x_{ij}\right) \nonumber\\
 & = -\frac{df_{ij_{x}}}{dy_{i}}. \label{eqn:negative_j_point_derivative_y}
 \end{align}
 We extend these equations to all three components, and get from Equations~\ref{eqn:i_point_derivate_x_i} and \ref{eqn:i_point_derivate_y_i} that 
@@ -272,9 +272,9 @@ $$
 \renewcommand\arraystretch{1.5}
 \frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{i}} = 
 	\begin{pmatrix}
-		s(r_{ij}) & 0 & 0 \\
-		0 & s(r_{ij}) & 0 \\
-		0 & 0 & s(r_{ij})
+		s_{ij} & 0 & 0 \\
+		0 & s_{ij} & 0 \\
+		0 & 0 & s_{ij}
 	\end{pmatrix} + 48\left(-14\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(\frac{1}{r_{ij}}\right)^{10}\right)\vec{r}_{ij}\vec{r}_{ij}^{T},
 $$ where $\vec{r}_{ij} = \begin{psmallmatrix} x_{i} - x_{j} \\ y_{i} - y{_j} \\ z_{i} - z_{j}\end{psmallmatrix}$.
 Lastly, we need the following relations

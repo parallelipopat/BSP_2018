@@ -14,7 +14,7 @@
 	\usepackage[margin=1in]{geometry}
 	\usepackage[ruled, vlined, algosection]{algorithm2e}
 	\usepackage{wrapfig}
-	\usepackage{mcode}
+	\usepackage[numbered]{mcode}
 	\usepackage{bm}
 	\newcommand{\mycommfont}[1]{\footnotesize \textcolor{blue}{#1}}
 	\newtheorem{theorem}{Theorem}[section]
@@ -28,16 +28,65 @@
 	\numberwithin{table}{section}
 	\numberwithin{figure}{section}
 	\usepackage{subfiles}
+
+
+\title{
+	{Thesis Title}\\
+	{\large University of Oxford}\\
+	{\large MMathCompSci Part B}
+}
+\author{Candidate Number: 1006833}
+\date{Hilary Term, 2018}
+
 \begin{document}
+	\maketitle
+
+	\newpage
+	\tableofcontents
+
+	\newpage
  	\subfile{Introduction/Introduction.tex}
+
 	\newpage
  	\subfile{Newmark-Beta_Methods/Newmark-Beta_Methods.tex}
+
 	\newpage
 	\subfile{Argon/Argon.tex}
+
 	\newpage
 	\subfile{Experiment/Experiment.tex}
+
 	\newpage
 	\subfile{Conclusion/Conclusion.tex}
+
+	\newpage
+	\appendix
+	\section{Appendix}
+	
+	\subsection{ Lotka-Volterra Solutions Code}
+	\lstinputlisting{Appendix/lotka-volterra.m}
+
+	\newpage
+	\subsection{Convergence Tests on Pendulum Problem Code}
+	\lstinputlisting{Appendix/convergence_test_pendulum.m}
+	\lstinputlisting{Appendix/newmark_beta.m}
+
+	\newpage
+	\subsection{Lennard-Jones Potential Graph Code}
+	\lstinputlisting{Appendix/lj_potential_graph.m}
+
+	\newpage
+	\subsection{Molecular Dynamics: Implicit Methods Code}
+	\lstinputlisting{Appendix/implicit_methods/md_sim.m}
+	\lstinputlisting{Appendix/implicit_methods/initialize_params.m}
+	\lstinputlisting{Appendix/implicit_methods/initialize_cube.m}
+	\lstinputlisting{Appendix/implicit_methods/find_cube_length.m}
+	\lstinputlisting{Appendix/implicit_methods/initialize_velocities.m}
+	\lstinputlisting{Appendix/implicit_methods/find_neighbours.m}
+	\BlankLine
+	\BlankLine
+	\lstinputlisting{Appendix/implicit_methods/find_forces.m}
+
 	\newpage
 	\bibliography{BibTexRef}
 	\bibliographystyle{plain}
