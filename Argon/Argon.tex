@@ -34,7 +34,7 @@ Before populating the argon atoms, we need to establish how the molecules will i
 \end{align}
 where $\vec{r}_{ij}$ is the displacement between the $i^{th}$ and the $j^{th}$ atoms, $r_{ij} = \left\Vert\vec{r}_{ij}\right\Vert_{2}$, $\varepsilon$ is the potential well depth (a measure of strength of attraction of two atoms), and $\sigma$ is the distance at which the potential between two atoms is 0. The Lennard-Jones potential is a very simple model for the interactive forces between atoms; nevertheless it was found to suffice for modelling argon atoms in \cite{Rahman1964}. In fact, the simplicity of the Lennard-Jones potential contributes to speed of the simulation - given a system of $n$ atoms, the potential needs to be evaluated $\frac{n\left(n+1\right)}{2}$ times $\left(\mbox{as }r_{ij} = r_{ji}\right)$.
 
-For an argon atom, $\varepsilon = 1.65 \times 10^{-21}$ J and $\sigma = 3.40 \times 10^{-10}$ m. The computer is prone to making errors when operating on such small numbers, so we look at a technique that handles this problem in the next subsection.
+For an argon atom, $\varepsilon = 1.65 \times 10^{-21}$ J and $\sigma = 3.40 \times 10^{-10}$ m. The computer is prone to making errors when operating on such small numbers, so we look at a technique that handles this problem in Subsection~\ref{subsection:reduced_units}.
 
 \subsection{Forces}
 
@@ -48,9 +48,9 @@ Now,
 \end{align*}
 and
 \begin{align*}
-\frac{dr_{ij}}{d\vec{r_{ij}}} = \frac{\vec{r}_{ij}}{r_{ij}}
-\end{align*}.
-Hence, by the chain rule, we get that
+\frac{dr_{ij}}{d\vec{r}_{ij}} = \frac{\vec{r}_{ij}}{r_{ij}}.
+\end{align*}
+By the chain rule, we get that
 \begin{align}
 \vec{f}\left(\vec{r}_{ij}\right) & = -4\varepsilon \left[ -12\sigma^{12}\left( \frac{1}{r_{ij}}\right)^{13} + 6\sigma^{6}\left( \frac{1}{r_{ij}}\right)^{7}\right] \times \frac{\vec{r}_{ij}}{r_{ij}} \nonumber \\
 & = 48\varepsilon \left[ \sigma^{12}\left( \frac{1}{r_{ij}}\right)^{14} - \frac{\sigma^{6}}{2}\left( \frac{1}{r_{ij}}\right)^{8}\right]\vec{r}_{ij}. \label{eqn:lennard-jones_force_one_atom}
@@ -61,20 +61,20 @@ Hence, we get that the force exterted on particle $i$, $\vec{F}_{i}$ is given by
 \end{align*}
 Note that we can reduce the number of computations of $\vec{f}_{ij}$ by half due to Newton's Third Law Motion: every action has an equal and opposite reaction implies that $\vec{f}_{ij} = -\vec{f}_{ji}$.
 
-\subsection{Reduced Units}
+\subsection{Reduced Units} \label{subsection:reduced_units}
 
 As explained earlier, limits on a computer's precision can introduce floating point errors when expressing miniscule quantities such as potential in terms of the SI units. Hence, we scale - or ``reduce'' - these SI unis such that the quantities involved in the simulation have an order of magnitude of 1. This makes simplifies the calculations, and has the added benefit of making erroneous results easier to spot (as extreme values are now unlikely). We start off by expressing lengths in terms of $\sigma^{*}$, where $1\, \sigma^{*} = 3.40 \times 10^{-10}$ m, and energy in terms of $\varepsilon^{*}$, where $1\, \varepsilon^{*}= 1.65 \times 10^{-21}$ J. Then, the Lennard-Jones potential can be calculated as
 \begin{align}
 	V\left(\vec{r}_{ij}\right) = 4 \left[ \left( \frac{1}{r_{ij}}\right)^{12} - \left( \frac{1}{r_{ij}}\right)^{6} \right], \label{eqn:lennard-jones_potential_reduced}
 \end{align}
-where $\vec{r}_{ij}$ and $r_{ij}$ have the same meaning as before, but are expressed as a multiple of $\sigma$.
+where $\vec{r}_{ij}$ and $r_{ij}$ have the same meaning as before, but are expressed as a multiple of $\sigma^{*}$.
 Then, we can rewrite Equation~\ref{eqn:lennard-jones_force_one_atom} as
 \begin{align}
 \vec{f}\left(\vec{r}_{ij}\right) = 48\left( \frac{1}{r_{ij}}\right)^{8} \left[ \left( \frac{1}{r_{ij}}\right)^{6} - \frac{1}{2}\right]\vec{r}_{ij}. \label{eqn:lennard-jones_force_reduced_one_atom}
 \end{align}
 As the SI unit for force is J$\cdot\mbox{m}^{-1}$, the reduced unit for force is $\varepsilon\cdot\sigma^{-1}$.
 
-Similarly, we define a reduced unit for mass, $\mbox{m}^{*}$ for the mass of an argon atom $\left(6.69 \times 10^{-23}\mbox{ g}\right)$. In fact, we can simplify the calculation $\vec{a} = \frac{\vec{F}}{m}$ by setting $1\mbox{ m}^{*} = 48\varepsilon^{*}\sigma^{*^{-2}}\mbox{s}^{*^{2}}$, where $\mbox{s}^{*}$ is the yet-to-be-calculated reduced unit for time (this definition follows from $1\mbox{ J} = 1 \mbox{ kg}\cdot\mbox{m}^{-2}\cdot \mbox{s}^{2}$). Plugging in the values, we get that $1 \mbox{ s}^{*} = 3.125 \times 10^{-13}$ s. Then a step-size of 10 femtoseconds is equivalent to $h = 0.032$.
+Similarly, we define a reduced unit for mass, $\mbox{m}^{*}$ for the mass of an argon atom $\left(6.69 \times 10^{-23}\mbox{ g}\right)$. In fact, we can simplify the calculation $\vec{a} = \frac{\vec{F}}{m}$ by setting $1\mbox{ m}^{*} = 48\varepsilon^{*}\sigma^{*^{-2}}\mbox{s}^{*^{2}}$, where $\mbox{s}^{*}$ is the yet-to-be-calculated reduced unit for time (this definition follows from $1\mbox{ J} = 1 \mbox{ kg}\cdot\mbox{m}^{-2}\cdot \mbox{s}^{2}$). Plugging in the values, we get that $1 \mbox{ s}^{*} = 3.125 \times 10^{-13}$ s. Then a step-size of 10 femtoseconds is equivalent to $h = 0.032$. We use such a small step size as we assume during numerical differentiation that the velocity and the acceleration of an argon atom are constant in the interval of one time step.  
 Lastly, we will see in a later subsection that the distribution of velocities in a system of particles depends upon the Boltzmann constant, $k_{B} = 1.381 \times 10^{-23} \mbox{J}\cdot\mbox{K}^{-1}$. We set this to 1 in our reduced units system, by defining $1 \mbox{ K}^{*} = 119.6\mbox{ K}$. These results are summarised in Table~\ref{tbl:reduced_units}.
 
 \begin{table}[H]
@@ -96,7 +96,7 @@ Lastly, we will see in a later subsection that the distribution of velocities in
 
 \subsection{Initializing Positions}
 
-We initialize the atoms as face-centered cubic lattice, i.e., a cube consisting of periodic images of a unit lattice cell where the atoms are placed at the eight corners, and at the center of each face. It is essential to start off the simulation with the atoms in this structure irrespective of what state of matter we want to study the simulation in. This is because randomly distributing the particles could lead to some of them being placed in close proximity of each other, leading to strong repulsive forces that would lead to errors in the simulation. Hence, if we want to study argon atoms in liquid or gas state, we start off with a face-centered cubic lattice, and increase the temperature of the system while the simulation is running.
+We initialize the atoms as face-centered cubic lattice, i.e., a cube consisting of periodic images of a unit lattice cell where the atoms are placed at the eight corners, and at the center of each face. It is essential to start off the simulation with the atoms in this structure irrespective of what state of matter we want to study the simulation in. This is because randomly distributing the particles could lead to some of them being placed in close proximity of each other, leading to strong repulsive forces that would introduce errors in the simulation. Hence, if we want to study argon atoms in liquid or gas state, we start off with a face-centered cubic lattice, and increase the temperature of the system while the simulation is running.
 
 We take as input the density of the cube to set the length of the cubic lattice. Thus, for 864 atoms at a density of $1.374 \mbox{ g}\cdot\mbox{cm}^{-3}$, we get the following cube lattice
  
@@ -117,7 +117,7 @@ Assuming that the velocity in a direction is independent of the velocities in th
 \begin{align*}
 	f_{\vec{v}}\left(v_{i}\right) = \left(\frac{m}{2\pi k_{B} T}\right)^{\frac{1}{2}}\exp\left[-\frac{mv_{i}^{2}}{2k_{B}T}\right].
 \end{align*}
-So, $v_{i} \sim \mathcal{N}\left(0,\frac{k_{B}T}{m}\right)$. We use the \texttt{normrnd} function of MATLAB to generate the velocities, and then correct them so that there is no overall momentum.
+So, $v_{i} \sim \mathcal{N}\left(0,\frac{k_{B}T}{m}\right)$. We use the \texttt{normrnd} function of MATLAB to generate the velocities, and then correct them so that there is no overall linear momentum.
 
 Now, we are using the Maxwell-Boltzmann distribution for ideal gases to initialize the velocities, but the particles have been initialized as a solid. Hence, we will `boil' the solid for a fixed number of steps at the start of the simulation by scaling the velocities
 \begin{align*}
@@ -133,12 +133,13 @@ This method is known as equilibration.
   	\caption{Change in the position of particles after 500 steps of equilibration}
 \end{figure}
 
+\newpage
 \subsection{Periodic Boundary Conditions and Minimum Image Convention}
 Typically, we'd imagine the argon gas to be in a container, with particles colliding against the walls and moving off in the opposite direction. In the real world, the number of particles colliding against the wall would be miniscule - for a liquid with $10^{21}$ particles, only 1 in $10^{7}$ would be close to the walls \cite{Rapaport2004}. In comparison, our system of 846 particles has almost half of them at the edges. The simulation would, thus, not reflect the internal state of the system accurately. We get rid off the walls through a technique known as periodic boundary conditions.
 Given a face-centered cubic lattice with side $L$, we consider it to consist of 27 identical cubes of side $\frac{L}{2}$ (one central box and 26 images of it), and we maintain this idea of images throughout the simulation, as shown in Figure~\ref{periodic_boundary_condition_2d}. This has two effects: 
 	\begin{itemize}
 	\item
-	Say we have to boxes beside each, Box A and Box B (Box B is an image of Box A). Then, as a particle moves out of Box A (say from the left), its image in Box B also moves out of Box B from the left, and enters Box A. This maintains that all the boxes in the cube are images of each other.
+	Say we have two boxes beside each, Box A and Box B (where Box B is an image of Box A). Then, as a particle moves out of Box A (say from the left), its image in Box B also moves out of Box B from the left, and enters Box A. This maintains that all the boxes in the cube are images of each other.
 	\item
 	A particle in a box will interact not only with the particles in the same box, but also the particles in the other boxes - leading to repeated calculation and effect of the same force.
 	\end{itemize}
@@ -161,11 +162,11 @@ We consider for this `wrap-around' effect through the Minimum Image Convention -
 \BlankLine
 
 $x_{ij} \leftarrow x_{i} - x_{j}$ ;\\
-$hL_{x} \leftarrow \frac{L_{x}}{2}$; \\
-\eIf{${x}_{ij} > hL_{x}$}{ 
+$half\_L_{x} \leftarrow \frac{L_{x}}{2}$; \\
+\eIf{${x}_{ij} > half\_L_{x}$}{ 
 	$x_{ij} \leftarrow x_{ij} - L_{x}$;\\
 }{
-	\If{${x}_{ij} \leq -hL_{x}$}{
+	\If{${x}_{ij} \leq -half\_L_{x}$}{
 		$x_{ij} \leftarrow x_{ij} + L_{x}$;\\
 	}
 }
@@ -178,16 +179,16 @@ We shorten the above algorithm by making use of MATLAB's vector operations: \mco
 
 \subsection{Cut-off Potential and Neighbour Lists}
 
-A final consideration for our molecular dynamics simulation is the number of times we are evaluating the forces, and how many of these evaluations are effective. Looking at the graph of the Lennard-Jones Potential in Figure~\ref{fig:lennard-jones_potential}, we see that the potential tends to zero as the inter-particle distance increases. Furthermore, the potential does not change much for over larger distances - implying that it is not efficient to consider interactions over all inter-particle distances. Rather, we can define a cut-off distance, $r_{c}$, beyond which the potential is zero. We neeed to now shift the Lennard-Jones Potential; otherwise the potential will have a discontinuity at $r_{c}$ and Newton's Laws of Motion do not hold at discontinuities. So, we get the shifted Lennard-Jones potential
+A final consideration for our molecular dynamics simulation is the number of times we are evaluating the forces, and how many of these evaluations are effective. Looking at the graph of the Lennard-Jones Potential in Figure~\ref{fig:lennard-jones_potential}, we see that the potential tends to zero as the inter-particle distance increases. Furthermore, the potential does not change much for over larger distances - implying that it is not efficient to consider interactions over all inter-particle distances. Rather, we can define a cut-off distance, $r_{c}$ beyond which the potential is zero. We neeed to now shift the Lennard-Jones Potential; otherwise the potential will have a discontinuity at $r_{c}$ and Newton's Laws of Motion do not hold at discontinuities. So, we get the shifted Lennard-Jones potential
 \begin{align}
 	V\left(\vec{r}_{ij}\right) = \begin{dcases}
 			4 \left[ \left(\left( \frac{1}{r_{ij}}\right)^{12} - \left( \frac{1}{r_{ij}}\right)^{6}\right) - \Bigg(\bigg( \frac{1}{r_{c}}\bigg)^{12} - \bigg( \frac{1}{r_{c}}\bigg)^{6}\Bigg) \right]&,\quad  \mbox{if } r_{ij} \leq r_{c} \\
 			0&,\quad \mbox{otherwise} 
 	\end{dcases} \label{eqn:lennard-jones_potential_reduced_shifted}
 \end{align}
-What is the optimal value for $r_{c}$? Periodic boundary conditions enforce that $r_{c} < \frac{L}{2}$ (as particles can only interact with particles in the same box). Generally, $r_{c} \leq \frac{L}{4}$\cite{FrenkelSmit2001}. In our simulations, we have $L = 10.229\,\sigma^{*}$; so, we define $r_{c} = 2.5\,\sigma^{*}$. We substitute this into Equation~\ref{eqn:lennard-jones_potential_reduced} and confirm that this is a good choice: $V(2.5) = -0.0163$, $V(2.6) = -0.0129$, and $V(3) = -0.005479$. The  loss in potential by setting $r_{c} = 2.5\,\sigma^{*}$ is minimal. The effect on computing time is phenomenal - only $6.3\%$ of all pairwise distances are smaller than $2.5\,\sigma^{*}$, thus eliminating $93.7\%$ of the computing power intensive force calculations.
+What is the optimal value for $r_{c}$? Periodic boundary conditions enforce that $r_{c} < \frac{L}{2}$ (as particles can only interact with particles in the same box). Generally, $r_{c} \leq \frac{L}{4}$\cite{FrenkelSmit2001}. In our simulations, we have $L = 10.229\,\sigma^{*}$; so, we define $r_{c} = 2.5\,\sigma^{*}$. We substitute this into Equation~\ref{eqn:lennard-jones_potential_reduced} and confirm that this is a good choice: $V(2.5) = -0.0163$, $V(2.6) = -0.0129$, and $V(3) = -0.005479$. The  loss in potential by setting $r_{c} = 2.5\,\sigma^{*}$ is minimal. The effect on computing time is phenomenal - only $6.3\%$ of all pairwise distances are smaller than $2.5\,\sigma^{*}$, thus eliminating $93.7\%$ of the computationally intensive force calculations.
 
-As we saw earlier, repeated conditional checks are not very efficient, and consume a lot of time. This is especially expensive if each iteration of the simulation involved calculating the inter-particle distance and checking if that distance is lesser than $2.5 \sigma^{*}$ - around $400,000$ checks per iteration! Assuming that the positions of the particles do not vary much in each successive iteration, we can calculate a list of `neighbours' for each particle at the start of the simulation. However, it cannot be guaranteed that this list will be accurate for the entire run of the simulation. In fact, tests conducted with the Velocity Verlet algorithm show that this list is only $80\%$ accurate after 10 iterations, and $50\%$ accurate after 35 iterations. Clearly, we can't use the same list for the entire simulation.
+As we saw earlier, repeated conditional checks are not very efficient and consume a lot of time. This is especially expensive if each iteration of the simulation involved calculating the inter-particle distance and checking if that distance is lesser than $2.5 \sigma^{*}$ - around $400,000$ checks per iteration! Assuming that the positions of the particles do not vary much in each successive iteration, we can calculate a list of `neighbours' for each particle at the start of the simulation. However, it cannot be guaranteed that this list will be accurate for the entire run of the simulation. In fact, tests conducted with the Velocity Verlet algorithm show that this list is only $80\%$ accurate after 10 iterations, and $50\%$ accurate after 35 iterations. Clearly, we can't use the same list for the entire simulation.
 
 To find the optimal number of iterations after which the list of neighbours should be refreshed $\left(N_{n}\right)$, we run the simulation for 100 equilibration iterations $\left(N_{e}\right)$ followed by 600 iterations $\left(N_{f}\right)$, calculating the energy values every 10 iterations $\left(N_{s}\right)$ after equilibration. We compute the time taken for each run and the percentage error in the final energy values, using $N_{n} = 1$ as our reference (neighbours lists are updated on each iteration). The results summarised in Table~\ref{tbl:results_neighbour_lists} make the case for using the same list for over multiple iterations ($5\times$ improvement in speed), but updating them regularly enough to reduce the overall error. There's trade-off between speed and accuracy, and setting $N_{n} = 15$ seems to be a good compromise. 
 
@@ -210,6 +211,7 @@ To find the optimal number of iterations after which the list of neighbours shou
 	\label{tbl:results_neighbour_lists}
 \end{table}
 
+\newpage
 \subsection{Computing the Jacobian}
 
 Recall from Equation~\ref{eqn:newton-raphson_final_step} that we need to compute the Jacobian of $\vec{a}\left(\vec{x}_{i}\right)$. For this, we need to store the coordinates of the molecules in a column vector of size $3N$, where N is the number of molecules in the system - rather than a more intuitive $N \times 3$ matrix. We fix the order of coordinates as
@@ -219,7 +221,7 @@ $$
 	\vdots \\
 	x_{3N} \\ y_{3N} \\ z_{3N}
 \end{pmatrix}  
-$$ where $x_{i}, y_{i}, z_{i}$ are the x,y, and z coordinates of particle $i$ respectively (we will continue to use an $N \times 3$ matrix for the explicit Newmark Beta methods, as this orientation is proven to be faster during tests). The Jacobian is then by a $3N \times 3N$ matrix, which would be very expensive to compute for large $N$.
+$$ where $x_{i}, y_{i}, z_{i}$ are the x,y, and z coordinates of particle $i$ respectively (we will continue to use an $N \times 3$ matrix for the explicit Newmark Beta methods, as this orientation is proven to be faster during tests). The Jacobian is then a $3N \times 3N$ matrix, which would be very expensive to compute for large $N$.
 $$
 \renewcommand\arraystretch{1.5}
 J = \begin{pmatrix}
@@ -245,7 +247,7 @@ Now, we have from Equation~\ref{eqn:lennard-jones_force_reduced_one_atom}
 f_{i_{x}} &= \sum_{j=1}^{N} f_{ij_{x}} \\
 &= \sum_{j\in ngbrs(i)} 48\left[ \left( \frac{1}{r_{ij}}\right)^{14} - \frac{1}{2}\left( \frac{1}{r_{ij}}\right)^{8} \right]x_{ij},
 \end{align*} where $r_{ij} = \sqrt{x_{ij}^{2} + y_{ij}^{2} + z_{ij}^{2}}$, and $ngbrs(i)$ is the list of neighbors of particle $i$. \\
-Focusing on just $f_{ij_{x}}$ for some $i$ and $j$, we write $f_{ij_{x}} = 48s_{ij}x_{ij}$. We can see that
+Focusing on just $f_{ij_{x}}$ for some $i$ and $j$, we write $f_{ij_{x}} = 48\cdot s_{ij} \cdot x_{ij}$. We can see that
 \begin{align*}
 \frac{ds_{ij}}{dx_{i}} & = -14\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{16}+ 4\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{10}, \\
 \frac{ds_{ij}}{dx_{j}} & = 14\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{16} - 4\left(x_{i} - x_{j}\right)\left(\frac{1}{r_{ij}}\right)^{10} \\
@@ -281,7 +283,7 @@ Lastly, we need the following relations
 \begin{align*}
 \frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{j}} &= -\frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{i}} \qquad \qquad \qquad \qquad\cdots \mbox{  from Equations \ref{eqn:negative_j_point_derivative_x} and \ref{eqn:negative_j_point_derivative_y}}, \\
 \frac{\partial \vec{f}_{ji}}{\partial \vec{p}_{i}} &= -\frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{i}} \qquad \qquad \qquad \qquad\cdots \mbox{  as } \vec{f}_{ji} = -\vec{f}_{ji}, \\
-\frac{\partial \vec{f}_{ji}}{\partial \vec{p}_{j}} &= -\frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{j}} = \frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{i}}
+\frac{\partial \vec{f}_{ji}}{\partial \vec{p}_{j}} &= -\frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{j}} = \frac{\partial \vec{f}_{ij}}{\partial \vec{p}_{i}} \qquad \qquad \qquad \qquad\cdots \mbox{  combining the two relations above.}
 \end{align*}
 
 Now, we can use the last four relations to populate Equation~\ref{eqn:block_derivative_fi_pj}, and we can calculate the Jacobian.

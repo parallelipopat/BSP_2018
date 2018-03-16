@@ -7,7 +7,7 @@
 In this  section, we look at a family of numerical methods used to solve second order ordinary differential equations. We look at the general formula, the algorithm to implement them, and an experimental verification of convergence order for different values of the parameters.
 
 \subsection{Introduction to Newmark Beta Methods}\label{subsection:intro_newmark-beta}
-The Newmark Beta methods were presented by Nathan M. Newmark in a paper \cite{Newmark1959} published in 1959. They were intended to be used for find solutions to problems in structural dynamics, \textit{``capable of application to structures of any degree of complication, with any relationship between force and displacement''}, with considerations for \textit{``any time of dynamic loading such as that due to shock or impact, vibration, earthquake motion, or blast from a nuclear weapon''}. However, they can also be used in less apocalyptical scenarios -  a special case known as the `Velocity Verlet' algorithm is the standard for solving the equations of motion in molecular dynamics simulations.
+The Newmark Beta methods were presented by Nathan M. Newmark in a paper \cite{Newmark1959} published in 1959. They were intended to be used for find solutions to problems in structural dynamics, \textit{``capable of application to structures of any degree of complication, with any relationship between force and displacement''}, with considerations for \textit{``any type of dynamic loading such as that due to shock or impact, vibration, earthquake motion, or blast from a nuclear weapon''}. However, they can also be used in less apocalyptical scenarios -  a special case known as the `Velocity Verlet' algorithm is the standard for solving the equations of motion in molecular dynamics simulations.
 Writing $\vec{x}_{i}$, $\vec{v}_{i}$, and $\vec{a}_{i}$ for the displacement, velocity, and acceleration at timestep $t_{i}$ respectively, the Newmark Beta methods are of the form
 \begin{align}
 	\begin{split}
@@ -65,7 +65,7 @@ Thus, we can see that the equation is implicit only for $\vec{x}_{i+1}$. However
 	D_{\vec{x}_{i+1}}\vec{\tilde{F}}\left(\vec{x}_{i+1}\right) & = \textbf{I} -  \beta h^{2}\textbf{J}_{\vec{a}_{i+1}},\nonumber \\
 	\vec{x}_{i+1} & = \vec{x}_{i} - D\vec{\tilde{F}}\left(\vec{x}_{i}\right)^{-1}\vec{\tilde{F}}\left(\vec{x}_{i}\right). \label{eqn:newton-raphson_final_step}
 \end{align}
-where $\textbf{J}_{\vec{a}_{i+1}}$ is the Jacobian of the acceleration function at time $t_{i+1}$. This equation requires that the inverse of $D\vec{\tilde{F}}\left(\vec{x}_{i}\right)$ exists. Then, we use the following algorithm to find the next set of points: \\
+where $\textbf{J}_{\vec{a}_{i+1}}$ is the Jacobian of the acceleration function at time $t_{i+1}$. Note that this equation requires that the inverse of $D\vec{\tilde{F}}\left(\vec{x}_{i}\right)$ exists. If this is satisified, then we use the following algorithm to find the next set of points: \\
 
 \begin{algorithm}[H]
 \SetAlgoLined
@@ -78,7 +78,7 @@ where $\textbf{J}_{\vec{a}_{i+1}}$ is the Jacobian of the acceleration function 
 $\vec{v}_{i+1} \leftarrow \vec{v}_{i} + h\left(1-\gamma\right)\vec{a}_{i}$ \tcp*{Updating the explicit part of the equation}
 Calculate $\vec{x}_{i+1}$ using the Newton-Raphson Method \\
 $\vec{a}_{i+1} \leftarrow \frac{1}{m}\vec{F}\left(\vec{x}_{i+1}\right)$\\ 
-$\vec{v}_{i+1} \leftarrow \vec{v}_{i+1} + \gamma h\vec{a}_{i+1}$ \tcp*{Updating the implicit part of the equation}
+$\vec{v}_{i+1} \leftarrow \vec{v}_{i+1} + \gamma h\vec{a}_{i+1}$ \tcp*{Updating the `implicit' part of the equation}
 \caption{Newmark-Beta Method Algorithm}
 \label{algorithm:newmark-beta}
 \end{algorithm}
@@ -92,7 +92,7 @@ We consider the case of a pendulum, governed by the equation:
 \frac{d^2\theta}{dt^2} = -\frac{g}{l}\sin(\theta)
 \end{align}
 
-We test for convergence in the following way: we fix $T = 5$, $\beta$ and $\gamma$, and consider $N = 16, 32, 64, 128, 256, 512, \mbox{and } 1024 \left(\mbox{hereby varying } h := \frac{T}{N}\right)$. Then, for each value of $h$, we calculate the position and velocity of the pendulum at $T = 5$, and compare these values to the reference solution calculated using MATLAB's \texttt{ode45} function (with absolute and relative tolerances of $10^{-12}$). We define the overall error in the estimation at time $t_{i}$ as a function of the error in displacement and velocity at $t_{i}$:
+We test for convergence in the following way: we fix the values of $\beta$ and $\gamma$, set $T = 5$,  and consider $N = 16, 32, 64, 128, 256, 512, \mbox{and } 1024 \left(\mbox{hereby varying } h := \frac{T}{N}\right)$. Then, for each value of $h$, we calculate the position and velocity of the pendulum at $T = 5$, and compare these values to the reference solution calculated using MATLAB's \texttt{ode45} function (with absolute and relative tolerances of $10^{-12}$). We define the overall error in the estimation at time $t_{i}$ as a function of the error in displacement and velocity at $t_{i}$:
 \begin{align*}
 err_{i} = \sqrt{\left(err_{x_{i}}\right)^2 + \left(err_{v_{i}}\right)^2}
 \end{align*}
