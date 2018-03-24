@@ -1,0 +1,81 @@
+\headcommand {\slideentry {0}{0}{1}{1/1}{}{0}}
+\headcommand {\beamer@framepages {1}{1}}
+\headcommand {\beamer@sectionpages {1}{1}}
+\headcommand {\beamer@subsectionpages {1}{1}}
+\headcommand {\sectionentry {1}{Introduction}{2}{Introduction}{0}}
+\headcommand {\beamer@subsectionpages {2}{1}}
+\headcommand {\beamer@subsectionentry {0}{1}{1}{2}{Geometric Numerical Integration}}
+\headcommand {\slideentry {1}{1}{1}{2/3}{Geometric Numerical Integration}{0}}
+\headcommand {\beamer@framepages {2}{3}}
+\headcommand {\beamer@subsectionpages {2}{3}}
+\headcommand {\beamer@subsectionentry {0}{1}{2}{4}{Example}}
+\headcommand {\slideentry {1}{2}{1}{4/4}{Example}{0}}
+\headcommand {\beamer@framepages {4}{4}}
+\headcommand {\slideentry {1}{2}{2}{5/5}{Example}{0}}
+\headcommand {\beamer@framepages {5}{5}}
+\headcommand {\slideentry {1}{2}{3}{6/6}{Example}{0}}
+\headcommand {\beamer@framepages {6}{6}}
+\headcommand {\beamer@sectionpages {2}{6}}
+\headcommand {\beamer@subsectionpages {4}{6}}
+\headcommand {\sectionentry {2}{Newmark Beta methods}{7}{Newmark Beta methods}{0}}
+\headcommand {\beamer@subsectionpages {7}{6}}
+\headcommand {\beamer@subsectionentry {0}{2}{1}{7}{General Form}}
+\headcommand {\slideentry {2}{1}{1}{7/8}{General Form}{0}}
+\headcommand {\beamer@framepages {7}{8}}
+\headcommand {\slideentry {2}{1}{2}{9/11}{General Form}{0}}
+\headcommand {\beamer@framepages {9}{11}}
+\headcommand {\beamer@subsectionpages {7}{11}}
+\headcommand {\beamer@subsectionentry {0}{2}{2}{12}{Convergence Tests}}
+\headcommand {\slideentry {2}{2}{1}{12/12}{Convergence Tests}{0}}
+\headcommand {\beamer@framepages {12}{12}}
+\headcommand {\beamer@sectionpages {7}{12}}
+\headcommand {\beamer@subsectionpages {12}{12}}
+\headcommand {\sectionentry {3}{Molecular Dynamics}{13}{Molecular Dynamics}{0}}
+\headcommand {\slideentry {3}{0}{1}{13/13}{}{0}}
+\headcommand {\beamer@framepages {13}{13}}
+\headcommand {\slideentry {3}{0}{2}{14/14}{}{0}}
+\headcommand {\beamer@framepages {14}{14}}
+\headcommand {\slideentry {3}{0}{3}{15/15}{}{0}}
+\headcommand {\beamer@framepages {15}{15}}
+\headcommand {\slideentry {3}{0}{4}{16/16}{}{0}}
+\headcommand {\beamer@framepages {16}{16}}
+\headcommand {\slideentry {3}{0}{5}{17/17}{}{0}}
+\headcommand {\beamer@framepages {17}{17}}
+\headcommand {\slideentry {3}{0}{6}{18/18}{}{0}}
+\headcommand {\beamer@framepages {18}{18}}
+\headcommand {\slideentry {3}{0}{7}{19/19}{}{0}}
+\headcommand {\beamer@framepages {19}{19}}
+\headcommand {\slideentry {3}{0}{8}{20/20}{}{0}}
+\headcommand {\beamer@framepages {20}{20}}
+\headcommand {\beamer@sectionpages {13}{20}}
+\headcommand {\beamer@subsectionpages {13}{20}}
+\headcommand {\sectionentry {4}{Conservation of Geometric Invariants}{21}{Conservation of Geometric Invariants}{0}}
+\headcommand {\beamer@subsectionpages {21}{20}}
+\headcommand {\beamer@subsectionentry {0}{4}{1}{21}{Time Reversibility}}
+\headcommand {\slideentry {4}{1}{1}{21/21}{Time Reversibility}{0}}
+\headcommand {\beamer@framepages {21}{21}}
+\headcommand {\slideentry {4}{1}{2}{22/22}{Time Reversibility}{0}}
+\headcommand {\beamer@framepages {22}{22}}
+\headcommand {\slideentry {4}{1}{3}{23/26}{Time Reversibility}{0}}
+\headcommand {\beamer@framepages {23}{26}}
+\headcommand {\beamer@subsectionpages {21}{26}}
+\headcommand {\beamer@subsectionentry {0}{4}{2}{27}{Aside: First Integrals}}
+\headcommand {\slideentry {4}{2}{1}{27/27}{Aside: First Integrals}{0}}
+\headcommand {\beamer@framepages {27}{27}}
+\headcommand {\beamer@subsectionpages {27}{27}}
+\headcommand {\beamer@subsectionentry {0}{4}{3}{28}{Total Linear Momentum}}
+\headcommand {\slideentry {4}{3}{1}{28/28}{Total Linear Momentum}{0}}
+\headcommand {\beamer@framepages {28}{28}}
+\headcommand {\slideentry {4}{3}{2}{29/29}{Total Linear Momentum}{0}}
+\headcommand {\beamer@framepages {29}{29}}
+\headcommand {\beamer@subsectionpages {28}{29}}
+\headcommand {\beamer@subsectionentry {0}{4}{4}{30}{Total Angular Momentum}}
+\headcommand {\slideentry {4}{4}{1}{30/30}{Total Angular Momentum}{0}}
+\headcommand {\beamer@framepages {30}{30}}
+\headcommand {\slideentry {4}{4}{2}{31/31}{Total Angular Momentum}{0}}
+\headcommand {\beamer@framepages {31}{31}}
+\headcommand {\beamer@partpages {1}{31}}
+\headcommand {\beamer@subsectionpages {30}{31}}
+\headcommand {\beamer@sectionpages {21}{31}}
+\headcommand {\beamer@documentpages {31}}
+\headcommand {\gdef \inserttotalframenumber {24}}

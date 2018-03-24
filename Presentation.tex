@@ -1,15 +1,419 @@
-\documentclass[pdf]{beamer}
-	\usepackage{hyperref}
+\documentclass{beamer}
 \mode<presentation>{}
+	\usepackage{hyperref}
+	\renewcommand{\vec}[1]{\mathbf{#1}}
+	\graphicspath{{Figures/}}
+	\usetheme{Warsaw}
 
-\title{Geometric Numerical Integration}
-\subtitle{}
-\author{Utsav Popat}
+
+\title{Long-term Conservation of Geometric Invariants by Newmark Beta methods}
+\subtitle{Numerical Computation Structured Projects}
+\author{Candidate No.: 1006833}
+\date{Hilary Term, 2018}
 
 \begin{document}
+\setlength{\abovedisplayskip}{3pt}
 
 \begin{frame}
 	\titlepage
 \end{frame}
+
+\section{Introduction}
+\subsection{Geometric Numerical Integration}
+\begin{frame}{Geometric Numerical Integration}
+	\begin{itemize}
+		\item<1->
+			Relatively young field - came into limelight around 40 years ago
+		\item<1->
+			Study of numerical solutions to ordinary differential equations had begun in the late 19\textsuperscript{th} Century
+		\item<1->
+			The focus had been on quantity - making the solutions as accurate as possible
+		\item<1->
+			Interest in computer simulations over a longer time frame raised an important question
+	\end{itemize}
+	\uncover<2-> {\centering \alert{What about the quality of solutions?}}
+\end{frame}
+
+\subsection[Example]{Example: Lotka-Volterra Equations}
+\begin{frame}{Example: Lotka-Volterra Equations}
+\begin{align*}
+	\frac{du}{dt} &= u\cdot(1-v),\\ 
+	\frac{dv}{dt} &= (u-2)\cdot v,
+\end{align*}
+where $u(t)$ is the population of the prey over time, and $v(t)$ is that of the predator.
+Dividing the two equations, we get that
+\begin{align*}
+\left(1 -  \frac{2}{u}\right) du = \left(\frac{1}{v} - 1\right) dv.
+\end{align*}
+Integrating the two sides of the equation, we get that
+\begin{align*}
+I(u, v) = u - 2\ln{u} +  v - \ln{v} = const
+\end{align*}
+\end{frame}
+
+\begin{frame}{Example: Lotka-Volterra Equations}
+Defining $a(u, v) := u\cdot(1-v)$, and $b(u, v) := (u-2)\cdot v$
+\vfill
+	\begin{itemize}
+		\item Explicit Euler Method
+			\begin{align*}
+				u_{n+1} &= u_{n} + h\cdot a(u_{n}, v_{n}), \\
+				v_{n+1} &= v_{n} + h\cdot b(u_{n}, v_{n}).
+			\end{align*}
+		\item Implicit Euler Method
+			\begin{align*}
+				u_{n+1} &= u_{n} + h\cdot a(u_{n+1}, v_{n+1}), \\
+				v_{n+1} &= v_{n} + h\cdot b(u_{n+1}, v_{n+1}).
+			\end{align*}
+		\item Symplectic Euler Method
+			\begin{align*}
+				u_{n+1} &= u_{n} + h\cdot a(u_{n+1}, v_{n}), \\
+				v_{n+1} &= v_{n} + h\cdot b(u_{n+1}, v_{n}).
+			\end{align*}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Example: Lotka-Volterra Equations}
+Initial Conditions: $N = 1000, h = 0.02, (u_{0}, v_{0}) = (2, 4)$
+\centering
+\includegraphics[scale=0.63]{lotka-volterra_method_comparison}
+\end{frame}
+
+\section{Newmark Beta methods}
+
+\subsection{General Form}
+\begin{frame}[t]{Newmark Beta methods}
+\begin{align*}
+		\vec{v}_{i+1} & = \vec{v}_{i} + h\left[\left(1-\gamma \right)\vec{a}_{i} + \gamma \vec{a}_{i+1}\right], \\
+		\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\left[ \left(1-2\beta \right)\vec{a}_{i} + 2\beta \vec{a}_{i+1}\right] ,
+\end{align*} where $\gamma \in \left[0, 1 \right]$ and $\beta \in \left[0, \frac{1}{2} \right]$.
+\bigskip
+\only<1-1>{
+	\begin{itemize}
+		\item 
+		Second order accurate $\Leftrightarrow \gamma = \frac{1}{2}$
+		\item
+		Conditionally stable \quad $\Leftrightarrow 2\beta \geq \gamma \geq \frac{1}{2}$
+	\end{itemize}
+}
+\only<2-2>{
+	\begin{itemize}
+		\item Average Acceleration Method $\left(\gamma = \frac{1}{2} \mbox{, } \beta = \frac{1}{4}\right)$
+		\item Linear Acceleration Method $\left(\gamma = \frac{1}{2} \mbox{, } \beta = \frac{1}{6}\right)$
+		\item Velocity Verlet Method $\left(\gamma = \frac{1}{2} \mbox{, } \beta = 0\right)$
+	\end{itemize}
+}
+\end{frame}
+
+\begin{frame}{Computational Application of Newmark Beta methods}
+\only<1-1> {
+	\includegraphics[width=\textwidth, angle=1]{newmark-beta_algorithm_original}
+}
+\only<2-> {
+	\begin{align*}
+			\vec{v}_{i+1} & = \vec{v}_{i} + h\left[\left(1-\gamma\right)\vec{a}_{i} + \gamma\vec{a}_{i+1}\left(\vec{x}_{i+1}\right)\right], \\
+			\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\left[\left(1-2\beta \right)\vec{a}_{i} + 2\beta\vec{a}_{i+1}\left(\vec{x}_{i+1}\right)\right]. 
+	\end{align*}
+}
+\uncover<3->{
+	\dotfill
+	\medskip
+	\begin{align*}
+		\vec{\tilde{F}}\left(\vec{x}_{i+1}\right) & = \vec{x}_{i+1} - \vec{x}_{i} -h\vec{v}_{i} - \frac{h^{2}}{2}\left[\left(1-2\beta\right)\vec{a}_{i} + 2\beta\vec{a}_{i+1}\left(\vec{x}_{i+1}\right)\right], \nonumber \\
+		D_{\vec{x}_{i+1}}\vec{\tilde{F}}\left(\vec{x}_{i+1}\right) & = \textbf{I} -  \beta h^{2}\textbf{J}_{\vec{a}_{i+1}},\nonumber \\
+		\vec{x}_{i+1} & = \vec{x}_{i} - D\vec{\tilde{F}}\left(\vec{x}_{i}\right)^{-1}\vec{\tilde{F}}\left(\vec{x}_{i}\right).
+	\end{align*}
+}
+\end{frame}
+
+\subsection{Convergence Tests}
+
+\begin{frame}{Convergence Tests}
+\begin{columns}
+	\column{0.5\textwidth}
+	\begin{align*}
+		\frac{d^2\theta}{dt^2} = -\frac{g}{L}\sin\theta
+	\end{align*} \\
+	\bigskip
+	Initial Conditions:
+	\begin{align*}
+	\theta_{0} &= 0 \\
+	g &= 10 \mbox{ m s}^{-2} \\
+	L &= 5 \mbox{ m} \\
+	T &= 5 \mbox{ s}
+	\end{align*}
+
+	\column{0.5\textwidth}
+	\centering
+	\includegraphics[width=0.75\textwidth]{pendulum_diagram_4.jpg}
+\end{columns}
+\end{frame}
+
+\section{Molecular Dynamics}
+
+\begin{frame}{Hamiltonian System}
+We have to solve the Hamiltonian
+\medskip
+\begin{align*}
+	H(p, q) = \frac{1}{2}\sum_{i = 1}^{N} m_{i}^{-1}p_{i}^{T}p_{i} + \sum_{i=1}^{N-1} \sum_{j=i+1}^{N} V\left(\left\Vert q_{i} - q_{j} \right\Vert_{2}\right).
+\end{align*}
+This is equivalent to
+\begin{align*}
+	\dot{q_{i}} &= \frac{1}{m_{i}}p_{i}, \quad \quad \dot{p_{i}} = \sum_{j=1}^{N}\nu_{ij}\left(q_{i} - q_{j}\right), \\
+\mbox{where } \nu_{ij} &= 
+	\begin{cases}
+		0 &, \mbox{ if } i = j \\
+		-\frac{V'\left(\left\Vert q_{i} - q_{j} \right\Vert_{2}\right)}{\left\Vert q_{i} - q_{j} \right\Vert_{2}} &, \mbox{ otherwise}
+	\end{cases}
+\end{align*}
+\end{frame}
+
+\begin{frame}{Lennard-Jones Potential}
+\begin{columns}
+	\column{0.5\textwidth}
+	\begin{align*}
+		V\left(\vec{r}_{ij}\right) = 4\varepsilon \left[ \left( \frac{\sigma}{r_{ij}}\right)^{12} - \left( \frac{\sigma}{r_{ij}}\right)^{6} \right],
+	\end{align*}
+
+	\column{0.5\textwidth}
+	\centering
+	\includegraphics[scale=0.40]{lennard-jones_potential_graph}
+\end{columns}
+where
+$$
+\arraycolsep=2pt
+\begin{array}{rl}
+	\vec{r}_{ij} &\mbox{is the displacement between the $i^{th}$ and the $j^{th}$ atoms} \\
+	r_{ij} &= \left\Vert\vec{r}_{ij}\right\Vert_{2} \\
+	\varepsilon & \mbox{is the potential well depth} \\
+	\sigma & \mbox{is the distance at which the potential between two atoms is 0}
+\end{array}
+$$
+\end{frame}
+
+\begin{frame}{Calculation of Forces}
+We have that force $\vec{f}$ along the vector $\vec{r}_{ij}$ is given by
+\begin{align*}
+\vec{f}\left(\vec{r}_{ij}\right) &= -\frac{dV}{d\vec{r}_{ij}} \\
+&=48\cdot \varepsilon \cdot \sigma^{6}\left[ \sigma^{6}\left( \frac{1}{r_{ij}}\right)^{14} - \frac{1}{2}\left( \frac{1}{r_{ij}}\right)^{8}\right]\vec{r}_{ij}
+\end{align*} \\
+\medskip
+Adding these terms up, the force exterted on particle $i$, $\vec{F}_{i}$ is given by
+\begin{align*}
+	\vec{F}_{i} = \sum_{i \neq j} \vec{f}_{ij}.
+\end{align*}
+\end{frame}
+
+\begin{frame}{Reduced Units}
+\begin{table}
+	\centering
+	\begin{tabular}{ |l|c|l| }
+		\hline
+		Physical Quantity & Reduced Unit & Value \\
+		\hline
+		Length & $\sigma^{*}$ & $3.40 \times 10^{-10}$ m \\
+		Energy & $\varepsilon^{*}$ & $1.65 \times 10^{-21}$ J \\
+		Mass & $\mbox{m}^{*}$ & $ 6.69 \times 10^{-23}$ kg\\
+		Time & $\mbox{s}^{*}$ & $3.125 \times 10^{-13}$ s \\
+		Temperature & $\mbox{K}^{*}$ & $119.6$ K \\
+		\hline
+	\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}{Initializing Positions}
+We initialize the atoms as face-centered cubic lattice:
+ \begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{fcc_lattice_-40_25.eps}
+  	\caption{Initial cubic lattice for 864 particles at a density of $1.374 \mbox{ g}\cdot\mbox{cm}^{-3}$}
+	\label{fig:initial_cubic_lattice}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Initializing Velocities}
+The probablity density function for velocities under the Maxwellian distribution is given by
+\begin{align*}
+	f_{\vec{v}}\left(v_{x}, v_{y}, v_{z}\right) = \left(\frac{m}{2\pi k_{B} T}\right)^{\frac{3}{2}}\exp\left[-\frac{m\left(v_{x}^{2}+v_{y}^{2}+v_{z}^{2}\right)}{2k_{B}T}\right].
+\end{align*} 
+Assuming that the velocity in a direction is independent of the velocities in the other directions, we get that the probability density function for velocity $v_{i}$ in direction {i} is
+\begin{align*}
+	f_{\vec{v}}\left(v_{i}\right) = \left(\frac{m}{2\pi k_{B} T}\right)^{\frac{1}{2}}\exp\left[-\frac{mv_{i}^{2}}{2k_{B}T}\right].
+\end{align*}
+So, $v_{i} \sim \mathcal{N}\left(0,\frac{k_{B}T}{m}\right)$.
+\end{frame}
+
+\begin{frame}{Initializing Velocities - Equilibration}
+ Scaling the velocities
+\begin{align*}
+	\vec{v}_{new} = \sqrt{\frac{T_{target}}{T_{old}}}\cdot\vec{v}_{old}.
+\end{align*}
+\begin{figure}
+	\centering
+ 	\begin{tabular}{@{}cc@{}}
+		\includegraphics[width=0.5\textwidth]{initial_solid_-57_27_2.eps} &
+  		\includegraphics[width=0.5\textwidth]{equilibrated_solid_-57_27_2.eps} \\
+ 	\end{tabular}
+  	\caption{Change in the position of particles after 500 steps of equilibration}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Periodic Boundary Conditions}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.6]{periodic_boundary_condition_2d.jpg}
+  	\caption{Periodic Boundary Conditons in 2-d}
+\end{figure}
+\end{frame}
+
+\section{Conservation of Geometric Invariants}
+
+\subsection{Time Reversibility}
+
+\begin{frame}{Time Reversibility}
+\begin{theorem} A Hamiltonian system is time reversible. \end{theorem}
+\begin{proof}
+	We apply the transformation $t \mapsto -t$.
+	\begin{align*}
+		q \mapsto q = \tilde{q},  \quad \quad p \mapsto -p = \tilde{p}.
+	\end{align*}
+	Then
+	\begin{alignat*}{4}
+		\dot{\tilde{q}} &= \frac{d\tilde{q}}{d\left(-t\right)} \quad &&= -\nabla_{\tilde{p}}H \quad &&= \nabla_{p}H \quad &&= \dot{q},\\
+		\dot{\tilde{p}} &= \frac{d\tilde{p}}{d\left(-t\right)} \quad &&= -\nabla_{\tilde{q}}H \quad && =-\nabla_{q}H \quad &&= \dot{p}. \qedhere
+	\end{alignat*}
+\end{proof}
+\end{frame}
+
+\begin{frame}{Time Reversibility}
+\begin{itemize}
+	\item
+	A numerical one-step method $\Phi_{h}: (\vec{x}_{i},\vec{v}_{i}) \mapsto (\vec{x}_{i+1},\vec{v}_{i+1})$ is time reversible if $\Phi_{h} = \Phi_{-h}^{-1}$.
+	\item
+	Informally, this means that if we exchange $i \leftrightarrow i+1$ and replace $h$ by $-h$ in our original method, then we should get the same method back.
+	\item
+	Any Newmark Beta method with $\gamma = \frac{1}{2}$  is reversible.
+	\item	
+	No other Newmark Beta method is reversible.
+	\item
+	However, rounding-off errors in practice mean that we may not get back the initial state of the system after reversing the velocities.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Time Reversibility}
+\only<1-1> {
+	\begin{figure}
+		\centering
+ 		\begin{tabular}{@{}cc@{}}
+			\includegraphics[width=0.5\textwidth]{time_reversible_b0,0g0,50_1000_velocity_histogram.eps} &
+    			\includegraphics[width=0.5\textwidth]{time_reversible_b0,0g0,50_1000_position_overlay.eps} \\
+		\end{tabular}
+  		\caption{Changes in position and velocities for $\beta = 0.00$ and $\gamma = 0.50$ after reversing 500 steps}
+		\label{fig:time_reversible_b0.00g0.50_1000}
+	\end{figure}
+}
+
+\only<2-2> {
+	\begin{figure}
+		\centering
+ 		\begin{tabular}{@{}cc@{}}
+			\includegraphics[width=0.5\textwidth]{time_reversible_b0,0g0,75_1000_velocity_histogram.eps} &
+    			\includegraphics[width=0.5\textwidth]{time_reversible_b0,0g0,75_1000_position_overlay.eps} \\
+		\end{tabular}
+  		\caption{Changes in position and velocities for $\beta = 0.00$ and $\gamma = 0.75$ after reversing 500 steps}
+		\label{fig:time_reversible_b0.00g0.75_1000}
+	\end{figure}
+}
+
+\only<3-3> {
+	\begin{figure}
+		\centering
+ 		\begin{tabular}{@{}cc@{}}
+    			\includegraphics[width=0.5\textwidth]{time_reversible_b0,0g0,75_1000_energy.eps} &
+    			\includegraphics[width=0.5\textwidth]{time_reversible_b0,0g0,75_50_energy.eps} \\
+		\end{tabular}
+  		\caption{Difference in behaviour of total  energy for $\beta = 0.00$ and $\gamma = 0.75$ over different timesteps}
+		\label{fig:time_reversible_b0.00g0.75_1000,50}
+	\end{figure}
+}
+
+\only<4-4> {
+	\begin{figure}
+		\centering
+ 		\begin{tabular}{@{}cc@{}}
+    			\includegraphics[width=0.5\textwidth]{time_reversible_b0,25g0,50_250_velocity_histogram.eps} &
+    			\includegraphics[width=0.5\textwidth]{time_reversible_b0,25g0,50_250_position_overlay.eps} \\
+		\end{tabular}
+  		\caption{Changes in position and velocities for $\beta = 0.25$ and $\gamma = 0.50$ after reversing 125 steps}
+		\label{fig:time_reversible_b0.25g0.50_250}
+	\end{figure}
+}
+\end{frame}
+
+\subsection{Aside: First Integrals}
+
+\begin{frame}{Aside: First Integrals}
+\begin{definition}
+	A non-constant function $I(y)$ is a \textit{first integral} (or an invariant) of the differential equation $\dot{y} = F(y)$ if $I(y(t))$ is constant along every solution, or equivalently, if
+\begin{align*}
+	\nabla I(y)F(y) = 0    \quad \quad \quad  \forall y.
+\end{align*}
+\end{definition}
+\end{frame}
+
+\subsection{Total Linear Momentum}
+
+\begin{frame}{Total Linear Momentum}
+\begin{theorem} Total linear momentum $P = \sum_{i=1}^{N} p_{i}$ is a first integral. \end{theorem}
+\begin{proof}
+	\begin{align*}
+		\nabla P & = \frac{dP}{dt} = \sum_{i=1}^{N} \frac{dp_{i}}{dt} \\
+		&=\sum_{i=1}^{N}\sum_{j=1}^{N}\nu_{ij}\left(q_{i} - q_{j}\right) \\
+		& = 0 \qquad \qquad \qquad \qquad \cdots \mbox{ as }\nu_{ij} = \nu_{ji} \, \forall i, j
+	\end{align*}
+\end{proof}
+\end{frame}
+
+\begin{frame}{Total Linear Momentum}
+\begin{block}{Claim} All Newmark Beta methods preserve linear first integrals \end{block}
+\begin{proof}
+	Let $I(\vec{x}, \vec{v}) = b^{T}\vec{x} + c^{T}\vec{v}$ be a linear first integral, where $b$ and $c$ are some constant vectors.\\
+	We want that $I'(\vec{x}, \vec{v})= 0$  $\forall \vec{x}, \vec{v}$. \\
+	But $I'(\vec{x}, \vec{v}) = b^{T}\vec{v} + c^{T}\vec{a(\vec{x})}\ = 0 \implies b^{T} = 0$ and $c^{T}\vec{a}(\vec{x}) = 0 \, \forall \vec{x}$. So, $I(\vec{x}, \vec{v}) = I(\vec{v}) = c^{T}\vec{v}$.
+	\begin{align*}
+		I\left(\vec{v}_{i+1}\right) &= c^{T}\vec{v}_{i+1} \\
+		&= c^{T}\vec{v}_{i} + h\left[\left(1-\gamma\right)c^{T}\vec{a}(\vec{x}_{i}) + \gamma c^{T}\vec{a}(\vec{x}_{i+1})\right] \\
+		&= c^{T}\vec{v}_{i} = I\left(\vec{v}_{i}\right) \qedhere
+	\end{align*} 
+\end{proof}
+\end{frame}
+
+\subsection{Total Angular Momentum}
+
+\begin{frame}{Total Angular Momentum}
+\begin{theorem} Total angular momentum $L = \sum_{i=1}^{N} q_{i} \times p_{i}$ is a first integral. \end{theorem}
+\begin{proof}
+	\begin{align*}
+		\nabla L & = \sum_{i=1}^{N} \left(\dot{q}_{i} \times p_{i} + {q}_{i} \times \dot{p}_{i}\right) \\  
+		& = \sum_{i=1}^{N} \left( \frac{1}{m_{i}}p_{i} \times p_{i}\right) +  \sum_{i=1}^{N}\sum_{j=1}^{N} \left(q_{i} \times \nu_{ij}\left(q_{i} - q_{j}\right)\right) \\
+		& = 0  \qquad \qquad \qquad \cdots \mbox{ as }\nu_{ij} = \nu_{ji} \mbox{ and } p_{i} \times p_{i} = 0 \,\forall i, j \qedhere
+	\end{align*}
+\end{proof}
+\end{frame}
+
+\begin{frame}{Total Angular Momentum}
+\begin{block}{Claim} Angular momentum is preserved $\Leftrightarrow \beta = 0, \gamma = \frac{1}{2}$. \end{block}
+\begin{proof}
+	\begin{align*}
+		L_{i+1} -  L_{i} &= \sum_{k=1}^{N}\left(q_{i+1}\right)_{k} \times \left(p_{i+1}\right)_{k} - \sum_{k=1}^{N}\left(q_{i}\right)_{k} \times \left(p_{i}\right)_{k} \\
+		&= h^{2}\left(\gamma - \frac{1}{2}\right)\sum_{k=1}^{N} (\vec{a}_{i})_{k} \times (\vec{p}_{i})_{k} \\ &+ h^{2}\beta\sum_{k=1}^{N} (\vec{a}_{i+1})_{k} \times (\vec{p}_{i+1})_{k} - (\vec{a}_{i})_{k} \times (\vec{p}_{i})_{k} .
+	\end{align*}
+	\vspace{-4pt}
+	So $L_{i+1}-L_{i} = 0 \Leftrightarrow \beta = 0, \gamma = \frac{1}{2}$.
+\end{proof}
+\end{frame}
+
+
+
 
 \end{document}
