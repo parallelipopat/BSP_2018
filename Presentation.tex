@@ -1,10 +1,37 @@
 \documentclass{beamer}
 \mode<presentation>{}
 	\usepackage{hyperref}
+	\usepackage{mathtools}
 	\renewcommand{\vec}[1]{\mathbf{#1}}
 	\graphicspath{{Figures/}}
-	\usetheme{Warsaw}
+	\usetheme{CambridgeUS}
 
+\AtBeginSection[]{
+{
+  \setbeamertemplate{footline}{}
+  \begin{frame}[noframenumbering]
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+}
+
+\setlength{\abovedisplayskip}{3pt}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{
+\leavevmode
+\hbox{
+\begin{beamercolorbox}[wd=\paperwidth,ht=2.25ex,dp=1ex,right]{}
+   \insertframenumber{} \hspace*{2ex} 
+  \end{beamercolorbox}
+}
+\vskip0pt
+}
+\makeatother
 
 \title{Long-term Conservation of Geometric Invariants by Newmark Beta methods}
 \subtitle{Numerical Computation Structured Projects}
@@ -12,11 +39,13 @@
 \date{Hilary Term, 2018}
 
 \begin{document}
-\setlength{\abovedisplayskip}{3pt}
 
-\begin{frame}
+{
+\setbeamertemplate{footline}{}
+\begin{frame}[noframenumbering]
 	\titlepage
 \end{frame}
+}
 
 \section{Introduction}
 \subsection{Geometric Numerical Integration}
@@ -403,17 +432,89 @@ So, $v_{i} \sim \mathcal{N}\left(0,\frac{k_{B}T}{m}\right)$.
 
 \begin{frame}{Total Angular Momentum}
 \begin{block}{Claim} Angular momentum is preserved $\Leftrightarrow \beta = 0, \gamma = \frac{1}{2}$. \end{block}
+	\setlength{\belowdisplayskip}{1pt}
 \begin{proof}
 	\begin{align*}
 		L_{i+1} -  L_{i} &= \sum_{k=1}^{N}\left(q_{i+1}\right)_{k} \times \left(p_{i+1}\right)_{k} - \sum_{k=1}^{N}\left(q_{i}\right)_{k} \times \left(p_{i}\right)_{k} \\
 		&= h^{2}\left(\gamma - \frac{1}{2}\right)\sum_{k=1}^{N} (\vec{a}_{i})_{k} \times (\vec{p}_{i})_{k} \\ &+ h^{2}\beta\sum_{k=1}^{N} (\vec{a}_{i+1})_{k} \times (\vec{p}_{i+1})_{k} - (\vec{a}_{i})_{k} \times (\vec{p}_{i})_{k} .
 	\end{align*}
-	\vspace{-4pt}
 	So $L_{i+1}-L_{i} = 0 \Leftrightarrow \beta = 0, \gamma = \frac{1}{2}$.
 \end{proof}
 \end{frame}
 
+\begin{frame}{Total Angular Momentum}
+\begin{table}
+	\centering
+	\begin{tabular}{ |r|r|r|r| }
+		\hline
+		Iteration & x-component & y-component & z-component\\
+		\hline
+		10 & 493.28 & -402.32 & 1407.30 \\
+		20 & -4.80 & -10.18 & 914.24 \\
+		30 & 320.20 & -147.35 & 980.93 \\
+		40 & 717.70 & -181.21 & 704.27 \\
+		50 & 594.66 & 152.47 & 507.19 \\
+		\hline
+	\end{tabular}
+	\caption{Total angular momentum of the system with $\beta = 0, \gamma = \frac{1}{2}$ over the first 50 iterations}
+	\label{tbl:total_angular_momentum_50_iterations}
+\end{table}
+\end{frame}
 
+\subsection{Total Energy}
+\begin{frame}{Total Energy}
+\begin{theorem} The total energy, or the Hamiltonian, is a first integral. \end{theorem}
+\begin{proof}
+From definitions
+\begin{align*}
+	\frac{dH}{dt} = \begin{pmatrix*}[r] -\nabla_{q}H \\ \nabla_{p}H \end{pmatrix*} and \nabla H = \left(\nabla_{p}H^{T}, \nabla_{q}H^{T}\right) \mbox{ and } 	
+\end{align*}
+Then, 
+$$
+\nabla H(p, q) \cdot \frac{dH}{dt} = \nabla_{p}H^{T}\cdot-\nabla_{q}H + \nabla_{q}H^{T}\cdot \nabla_{p}H = 0 \qedhere
+$$
+\end{proof} 
+\end{frame}
 
+\begin{frame}{Recap: Physical Interpretation of $\gamma$}
+\begin{itemize}
+	\item
+	$\gamma$ plays the role of a damping factor in the energy of the system.
+	\item
+	The energy of the system is damped by a factor of $\gamma - \frac{1}{2}$.
+	\item
+	If $\gamma > \frac{1}{2}$, the energy is damped.
+	\item
+	If $\gamma < \frac{1}{2}$, the energy grows.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Total Energy - Implicit Methods}
+We start by quoting Simo, Tarnow, and Wong: \\
+``\textit{What may seem surprising is that all of the implicit members of the Newmark family, perhaps the most widely used time-stepping algorithms in nonlinear structural dynamics, are not designed to conserve energy and also fail to conserve momentum.}''
+\end{frame}
+
+\begin{frame}{Total Energy - Implicit Methods}
+\only<1-1> {
+		\centering
+		\includegraphics[scale=0.60]{energy_b0,25_g0,50_long.eps}
+}
+
+\only<2-2> {
+		\centering
+		\includegraphics[scale=0.60]{energy_b0,10_g0,50_long.eps}
+}
+
+\only<3-3> {
+		\centering
+		\includegraphics[scale=0.60]{energy_b0,40_g0,50_long.eps}
+}
+\end{frame}
+
+\section{Conclusion}
+
+\begin{frame}{Conclusion}
+
+\end{frame}
 
 \end{document}
