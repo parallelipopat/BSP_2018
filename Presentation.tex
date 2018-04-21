@@ -35,7 +35,6 @@
 
 \title{Long-term Conservation of Geometric Invariants by Newmark Beta methods}
 \subtitle{Numerical Computation Structured Projects}
-\author{Candidate No.: 1006833}
 \date{Hilary Term, 2018}
 
 \begin{document}
@@ -117,21 +116,16 @@ Initial Conditions: $N = 1000, h = 0.02, (u_{0}, v_{0}) = (2, 4)$
 		\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\left[ \left(1-2\beta \right)\vec{a}_{i} + 2\beta \vec{a}_{i+1}\right] ,
 \end{align*} where $\gamma \in \left[0, 1 \right]$ and $\beta \in \left[0, \frac{1}{2} \right]$.
 \bigskip
-\only<1-1>{
-	\begin{itemize}
-		\item 
-		Second order accurate $\Leftrightarrow \gamma = \frac{1}{2}$
-		\item
-		Conditionally stable \quad $\Leftrightarrow 2\beta \geq \gamma \geq \frac{1}{2}$
-	\end{itemize}
-}
-\only<2-2>{
-	\begin{itemize}
-		\item Average Acceleration Method $\left(\gamma = \frac{1}{2} \mbox{, } \beta = \frac{1}{4}\right)$
-		\item Linear Acceleration Method $\left(\gamma = \frac{1}{2} \mbox{, } \beta = \frac{1}{6}\right)$
-		\item Velocity Verlet Method $\left(\gamma = \frac{1}{2} \mbox{, } \beta = 0\right)$
-	\end{itemize}
-}
+\begin{itemize}
+	\item
+	Implicit if $\beta > 0$
+	\item
+	Explicit If $\beta = 0$ and acceleration depends only on displacement
+	\item 
+	Second order accurate $\Leftrightarrow \gamma = \frac{1}{2}$
+	\item
+	Conditionally stable \quad $\Leftrightarrow 2\beta \geq \gamma \geq \frac{1}{2}$
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Computational Application of Newmark Beta methods}
@@ -155,29 +149,6 @@ Initial Conditions: $N = 1000, h = 0.02, (u_{0}, v_{0}) = (2, 4)$
 }
 \end{frame}
 
-\subsection{Convergence Tests}
-
-\begin{frame}{Convergence Tests}
-\begin{columns}
-	\column{0.5\textwidth}
-	\begin{align*}
-		\frac{d^2\theta}{dt^2} = -\frac{g}{L}\sin\theta
-	\end{align*} \\
-	\bigskip
-	Initial Conditions:
-	\begin{align*}
-	\theta_{0} &= 0 \\
-	g &= 10 \mbox{ m s}^{-2} \\
-	L &= 5 \mbox{ m} \\
-	T &= 5 \mbox{ s}
-	\end{align*}
-
-	\column{0.5\textwidth}
-	\centering
-	\includegraphics[width=0.75\textwidth]{pendulum_diagram_4.jpg}
-\end{columns}
-\end{frame}
-
 \section{Molecular Dynamics}
 
 \begin{frame}{Hamiltonian System}
@@ -185,15 +156,6 @@ We have to solve the Hamiltonian
 \medskip
 \begin{align*}
 	H(p, q) = \frac{1}{2}\sum_{i = 1}^{N} m_{i}^{-1}p_{i}^{T}p_{i} + \sum_{i=1}^{N-1} \sum_{j=i+1}^{N} V\left(\left\Vert q_{i} - q_{j} \right\Vert_{2}\right).
-\end{align*}
-This is equivalent to
-\begin{align*}
-	\dot{q_{i}} &= \frac{1}{m_{i}}p_{i}, \quad \quad \dot{p_{i}} = \sum_{j=1}^{N}\nu_{ij}\left(q_{i} - q_{j}\right), \\
-\mbox{where } \nu_{ij} &= 
-	\begin{cases}
-		0 &, \mbox{ if } i = j \\
-		-\frac{V'\left(\left\Vert q_{i} - q_{j} \right\Vert_{2}\right)}{\left\Vert q_{i} - q_{j} \right\Vert_{2}} &, \mbox{ otherwise}
-	\end{cases}
 \end{align*}
 \end{frame}
 
@@ -233,50 +195,34 @@ Adding these terms up, the force exterted on particle $i$, $\vec{F}_{i}$ is give
 \end{align*}
 \end{frame}
 
-\begin{frame}{Reduced Units}
-\begin{table}
-	\centering
-	\begin{tabular}{ |l|c|l| }
-		\hline
-		Physical Quantity & Reduced Unit & Value \\
-		\hline
-		Length & $\sigma^{*}$ & $3.40 \times 10^{-10}$ m \\
-		Energy & $\varepsilon^{*}$ & $1.65 \times 10^{-21}$ J \\
-		Mass & $\mbox{m}^{*}$ & $ 6.69 \times 10^{-23}$ kg\\
-		Time & $\mbox{s}^{*}$ & $3.125 \times 10^{-13}$ s \\
-		Temperature & $\mbox{K}^{*}$ & $119.6$ K \\
-		\hline
-	\end{tabular}
-\end{table}
-\end{frame}
-
-\begin{frame}{Initializing Positions}
-We initialize the atoms as face-centered cubic lattice:
- \begin{figure}
+\begin{frame}[t]{Simulation Details}
+\only<1-1> {
+\begin{itemize}
+	\item Initial Positions: cube of 864 particles at a density of $1.374 \mbox{ g}\cdot\mbox{cm}^{-3}$
+\end{itemize}
+\begin{figure}
 	\centering
 	\includegraphics[scale=0.5]{fcc_lattice_-40_25.eps}
-  	\caption{Initial cubic lattice for 864 particles at a density of $1.374 \mbox{ g}\cdot\mbox{cm}^{-3}$}
-	\label{fig:initial_cubic_lattice}
+	\caption{Face-centered cubic lattice of  864 particles at a density of $1.374 \mbox{ g}\cdot\mbox{cm}^{-3}$}
 \end{figure}
-\end{frame}
+}
 
-\begin{frame}{Initializing Velocities}
-The probablity density function for velocities under the Maxwellian distribution is given by
+\only<2-2> {
+\begin{itemize}
+	\item Initial Velocities: Maxwellian distribution of velocities
+\end{itemize}
+\vfill
 \begin{align*}
-	f_{\vec{v}}\left(v_{x}, v_{y}, v_{z}\right) = \left(\frac{m}{2\pi k_{B} T}\right)^{\frac{3}{2}}\exp\left[-\frac{m\left(v_{x}^{2}+v_{y}^{2}+v_{z}^{2}\right)}{2k_{B}T}\right].
-\end{align*} 
-Assuming that the velocity in a direction is independent of the velocities in the other directions, we get that the probability density function for velocity $v_{i}$ in direction {i} is
-\begin{align*}
-	f_{\vec{v}}\left(v_{i}\right) = \left(\frac{m}{2\pi k_{B} T}\right)^{\frac{1}{2}}\exp\left[-\frac{mv_{i}^{2}}{2k_{B}T}\right].
+	f_{\vec{v}}\left(v_{x}, v_{y}, v_{z}\right) &= \left(\frac{m}{2\pi k_{B} T}\right)^{\frac{3}{2}}\exp\left[-\frac{m\left(v_{x}^{2}+v_{y}^{2}+v_{z}^{2}\right)}{2k_{B}T}\right]. \\
+ 	\mbox{So, } v_{x}, v_{y}, v_{z} &\sim \mathcal{N}\left(0,\frac{k_{B}T}{m}\right)
 \end{align*}
-So, $v_{i} \sim \mathcal{N}\left(0,\frac{k_{B}T}{m}\right)$.
-\end{frame}
+\vfill
+}
 
-\begin{frame}{Initializing Velocities - Equilibration}
- Scaling the velocities
-\begin{align*}
-	\vec{v}_{new} = \sqrt{\frac{T_{target}}{T_{old}}}\cdot\vec{v}_{old}.
-\end{align*}
+\only<3-3>{
+\begin{itemize}
+	\item Equilibration
+\end{itemize}
 \begin{figure}
 	\centering
  	\begin{tabular}{@{}cc@{}}
@@ -285,14 +231,18 @@ So, $v_{i} \sim \mathcal{N}\left(0,\frac{k_{B}T}{m}\right)$.
  	\end{tabular}
   	\caption{Change in the position of particles after 500 steps of equilibration}
 \end{figure}
-\end{frame}
+}
 
-\begin{frame}{Periodic Boundary Conditions}
+\only<4-4>{
+\begin{itemize}
+	\item Periodic Boundary Conditions
+\end{itemize}
 \begin{figure}
 	\centering
 	\includegraphics[scale=0.6]{periodic_boundary_condition_2d.jpg}
   	\caption{Periodic Boundary Conditons in 2-d}
 \end{figure}
+}
 \end{frame}
 
 \section{Conservation of Geometric Invariants}
