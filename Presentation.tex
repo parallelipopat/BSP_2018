@@ -20,6 +20,20 @@
 }
 }
 
+\AtBeginSubsection[]{
+{
+  \setbeamertemplate{footline}{}
+  \begin{frame}[noframenumbering]
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsubsectionhead\par
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+}
+
 \setlength{\abovedisplayskip}{3pt}
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{footline}{
@@ -47,8 +61,7 @@
 }
 
 \section{Introduction}
-\subsection{Geometric Numerical Integration}
-\begin{frame}{Geometric Numerical Integration}
+\begin{frame}{Geometric Numerical Integration Timeline}
 	\begin{itemize}
 		\item<1->
 			Relatively young field - came into limelight around 40 years ago
@@ -62,54 +75,6 @@
 	\uncover<2-> {\centering \alert{What about the quality of solutions?}}
 \end{frame}
 
-\subsection[Example]{Example: Lotka-Volterra Equations}
-\begin{frame}{Example: Lotka-Volterra Equations}
-\begin{align*}
-	\frac{du}{dt} &= u\cdot(1-v),\\ 
-	\frac{dv}{dt} &= (u-2)\cdot v,
-\end{align*}
-where $u(t)$ is the population of the prey over time, and $v(t)$ is that of the predator.
-Dividing the two equations, we get that
-\begin{align*}
-\left(1 -  \frac{2}{u}\right) du = \left(\frac{1}{v} - 1\right) dv.
-\end{align*}
-Integrating the two sides of the equation, we get that
-\begin{align*}
-I(u, v) = u - 2\ln{u} +  v - \ln{v} = const
-\end{align*}
-\end{frame}
-
-\begin{frame}{Example: Lotka-Volterra Equations}
-Defining $a(u, v) := u\cdot(1-v)$, and $b(u, v) := (u-2)\cdot v$
-\vfill
-	\begin{itemize}
-		\item Explicit Euler Method
-			\begin{align*}
-				u_{n+1} &= u_{n} + h\cdot a(u_{n}, v_{n}), \\
-				v_{n+1} &= v_{n} + h\cdot b(u_{n}, v_{n}).
-			\end{align*}
-		\item Implicit Euler Method
-			\begin{align*}
-				u_{n+1} &= u_{n} + h\cdot a(u_{n+1}, v_{n+1}), \\
-				v_{n+1} &= v_{n} + h\cdot b(u_{n+1}, v_{n+1}).
-			\end{align*}
-		\item Symplectic Euler Method
-			\begin{align*}
-				u_{n+1} &= u_{n} + h\cdot a(u_{n+1}, v_{n}), \\
-				v_{n+1} &= v_{n} + h\cdot b(u_{n+1}, v_{n}).
-			\end{align*}
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{Example: Lotka-Volterra Equations}
-Initial Conditions: $N = 1000, h = 0.02, (u_{0}, v_{0}) = (2, 4)$
-\centering
-\includegraphics[scale=0.63]{lotka-volterra_method_comparison}
-\end{frame}
-
-\section{Newmark Beta methods}
-
-\subsection{General Form}
 \begin{frame}[t]{Newmark Beta methods}
 \begin{align*}
 		\vec{v}_{i+1} & = \vec{v}_{i} + h\left[\left(1-\gamma \right)\vec{a}_{i} + \gamma \vec{a}_{i+1}\right], \\
@@ -123,8 +88,6 @@ Initial Conditions: $N = 1000, h = 0.02, (u_{0}, v_{0}) = (2, 4)$
 	Explicit If $\beta = 0$ and acceleration depends only on displacement
 	\item 
 	Second order accurate $\Leftrightarrow \gamma = \frac{1}{2}$
-	\item
-	Conditionally stable \quad $\Leftrightarrow 2\beta \geq \gamma \geq \frac{1}{2}$
 \end{itemize}
 \end{frame}
 
@@ -132,13 +95,11 @@ Initial Conditions: $N = 1000, h = 0.02, (u_{0}, v_{0}) = (2, 4)$
 \only<1-1> {
 	\includegraphics[width=\textwidth, angle=1]{newmark-beta_algorithm_original}
 }
-\only<2-> {
+\only<2-2> {
 	\begin{align*}
 			\vec{v}_{i+1} & = \vec{v}_{i} + h\left[\left(1-\gamma\right)\vec{a}_{i} + \gamma\vec{a}_{i+1}\left(\vec{x}_{i+1}\right)\right], \\
 			\vec{x}_{i+1} & = \vec{x}_{i} + h\vec{v}_{i} + \frac{h^2}{2}\left[\left(1-2\beta \right)\vec{a}_{i} + 2\beta\vec{a}_{i+1}\left(\vec{x}_{i+1}\right)\right]. 
 	\end{align*}
-}
-\uncover<3->{
 	\dotfill
 	\medskip
 	\begin{align*}
@@ -180,19 +141,6 @@ $$
 	\sigma & \mbox{is the distance at which the potential between two atoms is 0}
 \end{array}
 $$
-\end{frame}
-
-\begin{frame}{Calculation of Forces}
-We have that force $\vec{f}$ along the vector $\vec{r}_{ij}$ is given by
-\begin{align*}
-\vec{f}\left(\vec{r}_{ij}\right) &= -\frac{dV}{d\vec{r}_{ij}} \\
-&=48\cdot \varepsilon \cdot \sigma^{6}\left[ \sigma^{6}\left( \frac{1}{r_{ij}}\right)^{14} - \frac{1}{2}\left( \frac{1}{r_{ij}}\right)^{8}\right]\vec{r}_{ij}
-\end{align*} \\
-\medskip
-Adding these terms up, the force exterted on particle $i$, $\vec{F}_{i}$ is given by
-\begin{align*}
-	\vec{F}_{i} = \sum_{i \neq j} \vec{f}_{ij}.
-\end{align*}
 \end{frame}
 
 \begin{frame}[t]{Simulation Details}
@@ -329,66 +277,17 @@ Adding these terms up, the force exterted on particle $i$, $\vec{F}_{i}$ is give
 }
 \end{frame}
 
-\subsection{Aside: First Integrals}
-
-\begin{frame}{Aside: First Integrals}
-\begin{definition}
-	A non-constant function $I(y)$ is a \textit{first integral} (or an invariant) of the differential equation $\dot{y} = F(y)$ if $I(y(t))$ is constant along every solution, or equivalently, if
-\begin{align*}
-	\nabla I(y)F(y) = 0    \quad \quad \quad  \forall y.
-\end{align*}
-\end{definition}
-\end{frame}
-
-\subsection{Total Linear Momentum}
-
-\begin{frame}{Total Linear Momentum}
-\begin{theorem} Total linear momentum $P = \sum_{i=1}^{N} p_{i}$ is a first integral. \end{theorem}
-\begin{proof}
-	\begin{align*}
-		\nabla P & = \frac{dP}{dt} = \sum_{i=1}^{N} \frac{dp_{i}}{dt} \\
-		&=\sum_{i=1}^{N}\sum_{j=1}^{N}\nu_{ij}\left(q_{i} - q_{j}\right) \\
-		& = 0 \qquad \qquad \qquad \qquad \cdots \mbox{ as }\nu_{ij} = \nu_{ji} \, \forall i, j
-	\end{align*}
-\end{proof}
-\end{frame}
-
-\begin{frame}{Total Linear Momentum}
-\begin{block}{Claim} All Newmark Beta methods preserve linear first integrals \end{block}
-\begin{proof}
-	Let $I(\vec{x}, \vec{v}) = b^{T}\vec{x} + c^{T}\vec{v}$ be a linear first integral, where $b$ and $c$ are some constant vectors.\\
-	We want that $I'(\vec{x}, \vec{v})= 0$  $\forall \vec{x}, \vec{v}$. \\
-	But $I'(\vec{x}, \vec{v}) = b^{T}\vec{v} + c^{T}\vec{a(\vec{x})}\ = 0 \implies b^{T} = 0$ and $c^{T}\vec{a}(\vec{x}) = 0 \, \forall \vec{x}$. So, $I(\vec{x}, \vec{v}) = I(\vec{v}) = c^{T}\vec{v}$.
-	\begin{align*}
-		I\left(\vec{v}_{i+1}\right) &= c^{T}\vec{v}_{i+1} \\
-		&= c^{T}\vec{v}_{i} + h\left[\left(1-\gamma\right)c^{T}\vec{a}(\vec{x}_{i}) + \gamma c^{T}\vec{a}(\vec{x}_{i+1})\right] \\
-		&= c^{T}\vec{v}_{i} = I\left(\vec{v}_{i}\right) \qedhere
-	\end{align*} 
-\end{proof}
-\end{frame}
-
 \subsection{Total Angular Momentum}
 
 \begin{frame}{Total Angular Momentum}
-\begin{theorem} Total angular momentum $L = \sum_{i=1}^{N} q_{i} \times p_{i}$ is a first integral. \end{theorem}
-\begin{proof}
-	\begin{align*}
-		\nabla L & = \sum_{i=1}^{N} \left(\dot{q}_{i} \times p_{i} + {q}_{i} \times \dot{p}_{i}\right) \\  
-		& = \sum_{i=1}^{N} \left( \frac{1}{m_{i}}p_{i} \times p_{i}\right) +  \sum_{i=1}^{N}\sum_{j=1}^{N} \left(q_{i} \times \nu_{ij}\left(q_{i} - q_{j}\right)\right) \\
-		& = 0  \qquad \qquad \qquad \cdots \mbox{ as }\nu_{ij} = \nu_{ji} \mbox{ and } p_{i} \times p_{i} = 0 \,\forall i, j \qedhere
-	\end{align*}
-\end{proof}
-\end{frame}
-
-\begin{frame}{Total Angular Momentum}
-\begin{block}{Claim} Angular momentum is preserved $\Leftrightarrow \beta = 0, \gamma = \frac{1}{2}$. \end{block}
+\begin{block}{Claim} Angular momentum, $\vec{L} = \sum_{i=1}^{N} \vec{q}_{i} \times \vec{p}_{i}$,  is preserved $\Leftrightarrow \beta = 0, \gamma = \frac{1}{2}$. \end{block}
 	\setlength{\belowdisplayskip}{1pt}
 \begin{proof}
 	\begin{align*}
-		L_{i+1} -  L_{i} &= \sum_{k=1}^{N}\left(q_{i+1}\right)_{k} \times \left(p_{i+1}\right)_{k} - \sum_{k=1}^{N}\left(q_{i}\right)_{k} \times \left(p_{i}\right)_{k} \\
+		\vec{L}_{i+1} - \vec{ L}_{i} &= \sum_{k=1}^{N}\left(\vec{q}_{i+1}\right)_{k} \times \left(\vec{p}_{i+1}\right)_{k} - \sum_{k=1}^{N}\left(\vec{q}_{i}\right)_{k} \times \left(\vec{p}_{i}\right)_{k} \\
 		&= h^{2}\left(\gamma - \frac{1}{2}\right)\sum_{k=1}^{N} (\vec{a}_{i})_{k} \times (\vec{p}_{i})_{k} \\ &+ h^{2}\beta\sum_{k=1}^{N} (\vec{a}_{i+1})_{k} \times (\vec{p}_{i+1})_{k} - (\vec{a}_{i})_{k} \times (\vec{p}_{i})_{k} .
 	\end{align*}
-	So $L_{i+1}-L_{i} = 0 \Leftrightarrow \beta = 0, \gamma = \frac{1}{2}$.
+	So $\vec{L}_{i+1}-\vec{L}_{i} = 0 \Leftrightarrow \beta = 0, \gamma = \frac{1}{2}$.
 \end{proof}
 \end{frame}
 
@@ -412,20 +311,6 @@ Adding these terms up, the force exterted on particle $i$, $\vec{F}_{i}$ is give
 \end{frame}
 
 \subsection{Total Energy}
-\begin{frame}{Total Energy}
-\begin{theorem} The total energy, or the Hamiltonian, is a first integral. \end{theorem}
-\begin{proof}
-From definitions
-\begin{align*}
-	\frac{dH}{dt} = \begin{pmatrix*}[r] -\nabla_{q}H \\ \nabla_{p}H \end{pmatrix*} and \nabla H = \left(\nabla_{p}H^{T}, \nabla_{q}H^{T}\right) \mbox{ and } 	
-\end{align*}
-Then, 
-$$
-\nabla H(p, q) \cdot \frac{dH}{dt} = \nabla_{p}H^{T}\cdot-\nabla_{q}H + \nabla_{q}H^{T}\cdot \nabla_{p}H = 0 \qedhere
-$$
-\end{proof} 
-\end{frame}
-
 \begin{frame}{Recap: Physical Interpretation of $\gamma$}
 \begin{itemize}
 	\item
